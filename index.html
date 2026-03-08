@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr" class="dark">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,138 +25,73 @@
         }
     </script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-        }
-
-        .dragover {
-            background-color: rgba(56, 189, 248, 0.1);
-            border-color: #38bdf8;
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .dragover { background-color: rgba(56, 189, 248, 0.1); border-color: #38bdf8; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
-
 <body class="min-h-screen p-4 md:p-8">
 
     <div class="max-w-6xl mx-auto space-y-8">
         <!-- En-tête -->
         <header class="text-center space-y-3">
-            <div
-                class="inline-block bg-accent/20 text-accent font-semibold px-3 py-1 rounded-full text-sm uppercase tracking-widest border border-accent/30 shadow-[0_0_15px_rgba(139,92,246,0.3)]">
+            <div class="inline-block bg-accent/20 text-accent font-semibold px-3 py-1 rounded-full text-sm uppercase tracking-widest border border-accent/30 shadow-[0_0_15px_rgba(139,92,246,0.3)]">
                 Laboratoire d'Analyse - FFESSM Niveau 4
             </div>
-            <h1
-                class="text-3xl md:text-5xl font-extrabold text-white flex items-center justify-center gap-4 mt-4 drop-shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="text-neonblue">
-                    <path d="M2 12h20" />
-                    <path d="M12 2v20" />
-                    <path d="m4.93 4.93 14.14 14.14" />
-                    <path d="m19.07 4.93-14.14 14.14" />
-                </svg>
+            <h1 class="text-3xl md:text-5xl font-extrabold text-white flex items-center justify-center gap-4 mt-4 drop-shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue"><path d="M2 12h20"/><path d="M12 2v20"/><path d="m4.93 4.93 14.14 14.14"/><path d="m19.07 4.93-14.14 14.14"/></svg>
                 Dive Tracker Pro
             </h1>
-            <p class="text-slate-400 max-w-2xl mx-auto">Importez votre télémétrie. L'algorithme classifie les phases,
-                isole les remontées assistées et évalue votre technique selon les standards fédéraux.</p>
+            <p class="text-slate-400 max-w-2xl mx-auto">Importez votre télémétrie. L'algorithme classifie les phases, isole les remontées assistées et évalue votre technique selon les standards fédéraux.</p>
         </header>
 
         <!-- Zone de dépôt -->
-        <div id="dropzone"
-            class="border-2 border-dashed border-slate-600 rounded-3xl p-12 text-center transition-all duration-300 cursor-pointer bg-cardbg hover:bg-slate-800 flex flex-col items-center justify-center min-h-[250px] shadow-xl relative overflow-hidden group">
-            <div
-                class="absolute inset-0 bg-gradient-to-b from-neonblue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-            </div>
+        <div id="dropzone" class="border-2 border-dashed border-slate-600 rounded-3xl p-12 text-center transition-all duration-300 cursor-pointer bg-cardbg hover:bg-slate-800 flex flex-col items-center justify-center min-h-[250px] shadow-xl relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-b from-neonblue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div class="flex gap-4 mb-4 relative z-10 group-hover:scale-110 transition-transform duration-300">
                 <!-- Icone FIT/Garmin -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                    class="text-neonblue">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 <!-- Icone CSV/Shearwater -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                    class="text-neongreen">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" x2="8" y1="13" y2="13" />
-                    <line x1="16" x2="8" y1="17" y2="17" />
-                    <polyline points="10 9 9 9 8 9" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-neongreen"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
             </div>
             <h3 class="text-2xl font-bold text-white mb-2 relative z-10">Glissez un fichier .FIT ou .CSV ici</h3>
             <p class="text-slate-400 mb-6 relative z-10">Compatible Garmin Descent (.fit) et Shearwater Cloud (.csv)</p>
-            <input type="file" id="fileInput" accept=".fit,.csv" class="hidden" />
-            <button onclick="document.getElementById('fileInput').click()"
-                class="relative z-10 bg-neonblue hover:bg-sky-400 text-slate-900 font-bold py-3 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(56,189,248,0.4)] hover:shadow-[0_0_30px_rgba(56,189,248,0.6)]">
+            <!-- L'attribut 'accept' a été retiré pour contourner le blocage système (OS) sur les extensions non-standards comme le .fit -->
+            <input type="file" id="fileInput" class="hidden" />
+            <button onclick="document.getElementById('fileInput').click()" class="relative z-10 bg-neonblue hover:bg-sky-400 text-slate-900 font-bold py-3 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(56,189,248,0.4)] hover:shadow-[0_0_30px_rgba(56,189,248,0.6)]">
                 Parcourir les fichiers
             </button>
-            <div id="loadingMsg"
-                class="hidden absolute inset-0 bg-cardbg/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center">
-                <svg class="animate-spin h-10 w-10 text-neonblue mb-4" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                    </path>
-                </svg>
+            <div id="loadingMsg" class="hidden absolute inset-0 bg-cardbg/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center">
+                <svg class="animate-spin h-10 w-10 text-neonblue mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 <span class="text-neonblue font-bold tracking-widest uppercase">Analyse Télémétrique...</span>
             </div>
-            <div id="errorMsg"
-                class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 text-neonred font-medium bg-red-950/80 px-4 py-2 rounded-full border border-neonred/50 z-20 whitespace-nowrap">
-            </div>
+            <div id="errorMsg" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 text-neonred font-medium bg-red-950/80 px-4 py-2 rounded-full border border-neonred/50 z-20 whitespace-nowrap"></div>
         </div>
 
         <!-- Tableau de bord -->
         <div id="dashboard" class="hidden space-y-8 animate-[fadeIn_0.5s_ease-out]">
-
+            
             <!-- Statistiques Globales -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div
-                    class="bg-cardbg p-5 rounded-2xl shadow-lg border border-slate-700/50 flex flex-col items-center text-center relative overflow-hidden">
+                <div class="bg-cardbg p-5 rounded-2xl shadow-lg border border-slate-700/50 flex flex-col items-center text-center relative overflow-hidden">
                     <div class="absolute -right-4 -top-4 w-16 h-16 bg-neonblue/10 rounded-full blur-xl"></div>
                     <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Prof. Max</span>
-                    <span id="statMaxDepth" class="text-3xl font-black text-white">-- <span
-                            class="text-lg text-slate-500 font-medium">m</span></span>
+                    <span id="statMaxDepth" class="text-3xl font-black text-white">-- <span class="text-lg text-slate-500 font-medium">m</span></span>
                 </div>
-                <div
-                    class="bg-cardbg p-5 rounded-2xl shadow-lg border border-slate-700/50 flex flex-col items-center text-center relative overflow-hidden">
+                <div class="bg-cardbg p-5 rounded-2xl shadow-lg border border-slate-700/50 flex flex-col items-center text-center relative overflow-hidden">
                     <div class="absolute -right-4 -top-4 w-16 h-16 bg-accent/10 rounded-full blur-xl"></div>
                     <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Temps Total</span>
-                    <span id="statDuration" class="text-3xl font-black text-white">-- <span
-                            class="text-lg text-slate-500 font-medium">min</span></span>
+                    <span id="statDuration" class="text-3xl font-black text-white">-- <span class="text-lg text-slate-500 font-medium">min</span></span>
                 </div>
-                <div
-                    class="bg-cardbg p-5 rounded-2xl shadow-lg border border-slate-700/50 flex flex-col items-center text-center relative overflow-hidden">
+                <div class="bg-cardbg p-5 rounded-2xl shadow-lg border border-slate-700/50 flex flex-col items-center text-center relative overflow-hidden">
                     <div class="absolute -right-4 -top-4 w-16 h-16 bg-neonred/10 rounded-full blur-xl"></div>
-                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Exercices
-                        Isolés</span>
-                    <span id="statAscentCount"
-                        class="text-3xl font-black text-neonred drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">--</span>
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Exercices Isolés</span>
+                    <span id="statAscentCount" class="text-3xl font-black text-neonred drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">--</span>
                 </div>
-                <div
-                    class="bg-cardbg p-5 rounded-2xl shadow-lg border border-slate-700/50 flex flex-col items-center text-center relative overflow-hidden">
+                <div class="bg-cardbg p-5 rounded-2xl shadow-lg border border-slate-700/50 flex flex-col items-center text-center relative overflow-hidden">
                     <div class="absolute -right-4 -top-4 w-16 h-16 bg-neongreen/10 rounded-full blur-xl"></div>
                     <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Palier / Sécu</span>
                     <span id="statSafety" class="text-2xl font-black text-neongreen mt-1">--</span>
@@ -168,26 +102,14 @@
             <div class="bg-cardbg p-6 rounded-3xl shadow-xl border border-slate-700/50">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                     <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="text-neonblue">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                         Profil Multiphase
                     </h3>
-                    <div
-                        class="flex flex-wrap gap-3 text-xs font-medium bg-slate-900 px-4 py-2 rounded-full border border-slate-700">
-                        <span class="flex items-center gap-1.5"><span
-                                class="w-3 h-3 rounded-full bg-[#0ea5e9] shadow-[0_0_8px_#0ea5e9]"></span>
-                            Descente</span>
-                        <span class="flex items-center gap-1.5"><span
-                                class="w-3 h-3 rounded-full bg-[#f43f5e] shadow-[0_0_8px_#f43f5e]"></span> Remontée
-                            Assistée</span>
-                        <span class="flex items-center gap-1.5"><span
-                                class="w-3 h-3 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]"></span>
-                            Palier/Fin</span>
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#64748b]"></span>
-                            Fond/Explo</span>
+                    <div class="flex flex-wrap gap-3 text-xs font-medium bg-slate-900 px-4 py-2 rounded-full border border-slate-700">
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#0ea5e9] shadow-[0_0_8px_#0ea5e9]"></span> Descente</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#f43f5e] shadow-[0_0_8px_#f43f5e]"></span> Remontée Assistée</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]"></span> Palier/Fin</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#64748b]"></span> Fond/Explo</span>
                     </div>
                 </div>
                 <div class="relative h-[450px] w-full">
@@ -198,15 +120,7 @@
             <!-- Rapport d'Analyse N4 -->
             <div class="space-y-6">
                 <h2 class="text-2xl font-bold text-white flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="text-accent">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                        <line x1="16" x2="8" y1="13" y2="13" />
-                        <line x1="16" x2="8" y1="17" y2="17" />
-                        <polyline points="10 9 9 9 8 9" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                     Évaluation Technique FFESSM
                 </h2>
 
@@ -214,17 +128,11 @@
                     <!-- Les cartes générées dynamiquement -->
                 </div>
             </div>
-
+            
             <!-- Export Section -->
             <div class="text-center pt-8 border-t border-slate-800">
-                <button onclick="downloadHTML()"
-                    class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-6 py-3 rounded-full text-sm font-semibold transition-colors border border-slate-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" x2="12" y1="15" y2="3" />
-                    </svg>
+                <button onclick="downloadHTML()" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-6 py-3 rounded-full text-sm font-semibold transition-colors border border-slate-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                     Télécharger cette application (index.html) pour GitHub Pages
                 </button>
             </div>
@@ -240,7 +148,7 @@
         const dashboard = document.getElementById('dashboard');
         const loadingMsg = document.getElementById('loadingMsg');
         const errorMsg = document.getElementById('errorMsg');
-
+        
         let diveChartInstance = null;
 
         // Drag and drop events
@@ -270,9 +178,12 @@
             if (files.length === 0) return;
             const file = files[0];
             const ext = file.name.split('.').pop().toLowerCase();
-
+            
+            // Validation de l'extension directement via JavaScript
             if (ext !== 'fit' && ext !== 'csv') {
-                showError("Format non supporté. Veuillez utiliser un fichier .fit ou .csv");
+                showError("Format non supporté. Veuillez sélectionner un fichier .fit (Garmin) ou .csv (Shearwater)");
+                // Reset file input so user can try again
+                fileInput.value = ''; 
                 return;
             }
 
@@ -281,18 +192,18 @@
             dashboard.classList.add('hidden');
 
             const reader = new FileReader();
-
-            reader.onload = function (e) {
+            
+            reader.onload = function(e) {
                 if (ext === 'fit') {
                     parseFitFile(e.target.result);
                 } else if (ext === 'csv') {
                     parseCSVFile(e.target.result);
                 }
             };
-
-            reader.onerror = function () {
-                showError("Erreur de lecture du fichier.");
-                loadingMsg.classList.add('hidden');
+            
+            reader.onerror = function() { 
+                showError("Erreur de lecture du fichier."); 
+                loadingMsg.classList.add('hidden'); 
             };
 
             if (ext === 'fit') {
@@ -314,9 +225,9 @@
             try {
                 const fitParser = new FitParser({ force: true, lengthUnit: 'm', elapsedRecordField: true });
                 const u8 = new Uint8Array(buffer);
-                fitParser.parse(u8, function (error, data) {
+                fitParser.parse(u8, function(error, data) {
                     if (error) { showError("Impossible de décoder ce fichier .fit."); return; }
-
+                    
                     if (!data || !data.records || data.records.length === 0) {
                         showError("Aucune donnée d'enregistrement trouvée.");
                         return;
@@ -325,7 +236,7 @@
                     let records = data.records;
                     let diveProfile = [];
                     let maxRaw = 0;
-
+                    
                     records.forEach(r => { if (r.depth !== undefined && parseFloat(r.depth) > maxRaw) maxRaw = parseFloat(r.depth); });
                     const depthFactor = maxRaw > 500 ? 1000 : 1; // Correction pour les montres en millimètres
 
@@ -354,7 +265,7 @@
             window.Papa.parse(text, {
                 header: true,
                 skipEmptyLines: true,
-                complete: function (results) {
+                complete: function(results) {
                     if (results.errors.length > 0 && results.data.length === 0) {
                         showError("Le fichier CSV semble corrompu ou illisible.");
                         return;
@@ -362,7 +273,7 @@
 
                     let data = results.data;
                     let keys = Object.keys(data[0]);
-
+                    
                     // Trouver intelligemment les colonnes Temps et Profondeur
                     let timeKey = keys.find(k => k.toLowerCase().includes('time') || k.toLowerCase().includes('temps'));
                     let depthKey = keys.find(k => k.toLowerCase().includes('depth') || k.toLowerCase().includes('profondeur'));
@@ -376,20 +287,20 @@
                     data.forEach(row => {
                         let tRaw = row[timeKey];
                         let dRaw = row[depthKey];
-
+                        
                         if (tRaw !== undefined && dRaw !== undefined && tRaw !== '' && dRaw !== '') {
                             let tStr = String(tRaw).trim();
                             let t;
-
+                            
                             // Support du format MM:SS ou Minutes décimales
                             if (tStr.includes(':')) {
                                 let parts = tStr.split(':');
-                                t = parseInt(parts[0]) + parseFloat(parts[1]) / 60;
+                                t = parseInt(parts[0]) + parseFloat(parts[1])/60;
                             } else {
                                 t = parseFloat(tStr.replace(',', '.'));
                             }
-
-                            let d = parseFloat(String(dRaw).replace(',', '.'));
+                            
+                            let d = parseFloat(String(dRaw).replace(',', '.')); 
 
                             if (!isNaN(t) && !isNaN(d)) {
                                 diveProfile.push({ x: t, y: d, speed: 0, phase: 'bottom' });
@@ -401,9 +312,9 @@
                         showError("Aucune donnée numérique valide trouvée dans le CSV.");
                         return;
                     }
-
+                    
                     // S'assurer que les points sont dans l'ordre chronologique
-                    diveProfile.sort((a, b) => a.x - b.x);
+                    diveProfile.sort((a,b) => a.x - b.x);
 
                     runAnalysis(diveProfile);
                 }
@@ -420,9 +331,9 @@
         }
 
         function runAnalysis(diveProfile) {
-            if (!diveProfile || diveProfile.length === 0) {
-                showError("Profil de plongée vide après décodage.");
-                return;
+            if (!diveProfile || diveProfile.length === 0) { 
+                showError("Profil de plongée vide après décodage."); 
+                return; 
             }
 
             let maxDepth = Math.max(...diveProfile.map(p => p.y));
@@ -430,7 +341,7 @@
 
             // Calcul des vitesses lissées
             for (let i = 0; i < diveProfile.length; i++) {
-                diveProfile[i].speed = calculateSpeed(diveProfile, i, 5);
+                diveProfile[i].speed = calculateSpeed(diveProfile, i, 5); 
             }
 
             // Détection des Phases et Exercices
@@ -440,11 +351,11 @@
 
             for (let i = 0; i < diveProfile.length; i++) {
                 let p = diveProfile[i];
-                let prevP = i > 0 ? diveProfile[i - 1] : p;
+                let prevP = i > 0 ? diveProfile[i-1] : p;
 
                 // 1. Descentes
                 if (p.speed > 3) p.phase = 'descent';
-
+                
                 // 2. Paliers (2m à 6m, vitesse très faible)
                 if (p.y >= 2 && p.y <= 6 && Math.abs(p.speed) < 2) {
                     p.phase = 'stop';
@@ -453,8 +364,8 @@
 
                 // 3. Remontées Assistées
                 if (p.speed < -2.5) {
-                    p.phase = 'ascent';
-
+                    p.phase = 'ascent'; 
+                    
                     if (!currentAscent) {
                         currentAscent = { startIndex: i, startPoint: p, points: [], speeds: [], drops: 0, stops: 0 };
                     }
@@ -465,24 +376,24 @@
                         currentAscent.endIndex = i;
                         currentAscent.endPoint = p;
                         let amplitude = currentAscent.startPoint.y - currentAscent.endPoint.y;
-
+                        
                         if (amplitude >= 8) {
                             ascents.push(currentAscent);
-                            for (let j = currentAscent.startIndex; j <= currentAscent.endIndex; j++) diveProfile[j].phase = 'ascent';
+                            for(let j = currentAscent.startIndex; j <= currentAscent.endIndex; j++) diveProfile[j].phase = 'ascent';
                         } else {
-                            for (let j = currentAscent.startIndex; j <= i; j++) if (diveProfile[j].phase === 'ascent') diveProfile[j].phase = 'bottom';
+                            for(let j = currentAscent.startIndex; j <= i; j++) if(diveProfile[j].phase === 'ascent') diveProfile[j].phase = 'bottom';
                         }
                         currentAscent = null;
                     } else if (p.speed <= -1) {
-                        currentAscent.points.push(p);
-                        currentAscent.speeds.push(Math.abs(p.speed));
-                        p.phase = 'ascent';
+                         currentAscent.points.push(p);
+                         currentAscent.speeds.push(Math.abs(p.speed));
+                         p.phase = 'ascent';
                     }
                 }
             }
-
+            
             if (currentAscent) {
-                currentAscent.endPoint = diveProfile[diveProfile.length - 1];
+                currentAscent.endPoint = diveProfile[diveProfile.length-1];
                 if (currentAscent.startPoint.y - currentAscent.endPoint.y >= 8) ascents.push(currentAscent);
             }
 
@@ -490,19 +401,19 @@
             ascents.forEach(asc => {
                 let amplitude = asc.startPoint.y - asc.endPoint.y;
                 let duration = asc.endPoint.x - asc.startPoint.x;
-                asc.avgSpeed = amplitude / duration;
+                asc.avgSpeed = amplitude / duration; 
                 asc.maxSpeed = Math.max(...asc.speeds);
-
+                
                 let mean = asc.avgSpeed;
                 let variance = asc.speeds.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / asc.speeds.length;
                 asc.stdDev = Math.sqrt(variance);
 
                 asc.dropsDetected = 0;
-                asc.stopsDuration = 0;
-
-                for (let k = 1; k < asc.points.length; k++) {
-                    let diffY = asc.points[k].y - asc.points[k - 1].y;
-                    let diffX = asc.points[k].x - asc.points[k - 1].x;
+                asc.stopsDuration = 0; 
+                
+                for(let k = 1; k < asc.points.length; k++) {
+                    let diffY = asc.points[k].y - asc.points[k-1].y;
+                    let diffX = asc.points[k].x - asc.points[k-1].x;
                     if (diffY > 0.3) asc.dropsDetected++;
                     if (Math.abs(asc.points[k].speed) < 1.5) asc.stopsDuration += diffX;
                 }
@@ -518,7 +429,7 @@
                 else if (asc.maxSpeed > 18) { score -= 1.5; remarks.push("Envolée locale constatée"); }
 
                 if (asc.dropsDetected > 2) { score -= 4; remarks.push("Redescentes/Yoyo pénalisants"); }
-
+                
                 if (asc.stdDev > 4) { score -= 1.5; remarks.push("Vitesse irrégulière (à-coups)"); }
                 else if (asc.stdDev <= 2.5 && asc.avgSpeed >= 9 && asc.avgSpeed <= 16) { remarks.push("Vitesse très constante"); }
 
@@ -532,11 +443,11 @@
             document.getElementById('statMaxDepth').innerHTML = `${maxDepth.toFixed(1)} <span class="text-lg text-slate-500 font-medium">m</span>`;
             document.getElementById('statDuration').innerHTML = `${Math.floor(durationMin)} <span class="text-lg text-slate-500 font-medium">min</span>`;
             document.getElementById('statAscentCount').textContent = ascents.length;
-
+            
             let safetyText = timeAtSafetyStop > 2 ? "Validé" : (timeAtSafetyStop > 0.5 ? "Tronqué" : "Absent");
             document.getElementById('statSafety').textContent = safetyText;
-            if (safetyText === "Validé") document.getElementById('statSafety').className = "text-2xl font-black text-neongreen mt-1";
-            else if (safetyText === "Tronqué") document.getElementById('statSafety').className = "text-2xl font-black text-orange-400 mt-1";
+            if(safetyText === "Validé") document.getElementById('statSafety').className = "text-2xl font-black text-neongreen mt-1";
+            else if(safetyText === "Tronqué") document.getElementById('statSafety').className = "text-2xl font-black text-orange-400 mt-1";
             else document.getElementById('statSafety').className = "text-2xl font-black text-slate-500 mt-1";
 
             loadingMsg.classList.add('hidden');
@@ -555,15 +466,15 @@
             }
 
             ascents.forEach((asc, idx) => {
-                let scoreColor = asc.score >= 8 ? 'text-neongreen drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
-                    asc.score >= 5 ? 'text-orange-400' : 'text-neonred drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]';
-                let borderColor = asc.score >= 8 ? 'border-neongreen/30' :
-                    asc.score >= 5 ? 'border-orange-400/30' : 'border-neonred/30';
+                let scoreColor = asc.score >= 8 ? 'text-neongreen drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 
+                                 asc.score >= 5 ? 'text-orange-400' : 'text-neonred drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]';
+                let borderColor = asc.score >= 8 ? 'border-neongreen/30' : 
+                                  asc.score >= 5 ? 'border-orange-400/30' : 'border-neonred/30';
                 let bgGlow = asc.score >= 8 ? 'bg-neongreen/5' : asc.score >= 5 ? 'bg-orange-400/5' : 'bg-neonred/5';
 
                 const card = document.createElement('div');
                 card.className = `p-6 rounded-3xl border ${borderColor} bg-slate-800/50 relative overflow-hidden group shadow-lg`;
-
+                
                 let remarksHtml = asc.remarks.map(r => {
                     let isGood = r.includes("Excellente") || r.includes("constante");
                     let icon = isGood ? '✓' : '⚠️';
@@ -613,7 +524,7 @@
 
         function drawChart(profileData) {
             const ctx = document.getElementById('diveChart').getContext('2d');
-            const chartData = profileData.map(d => ({ x: d.x, y: d.y }));
+            const chartData = profileData.map(d => ({ x: d.x, y: d.y })); 
 
             if (diveChartInstance) diveChartInstance.destroy();
 
@@ -632,11 +543,11 @@
                             borderColor: ctxSegment => {
                                 const p = profileData[ctxSegment.p1DataIndex];
                                 if (!p) return '#64748b';
-                                switch (p.phase) {
-                                    case 'ascent': return '#f43f5e';
-                                    case 'descent': return '#0ea5e9';
-                                    case 'stop': return '#10b981';
-                                    default: return '#64748b';
+                                switch(p.phase) {
+                                    case 'ascent': return '#f43f5e'; 
+                                    case 'descent': return '#0ea5e9'; 
+                                    case 'stop': return '#10b981'; 
+                                    default: return '#64748b'; 
                                 }
                             }
                         }
@@ -655,8 +566,8 @@
                             borderWidth: 1,
                             padding: 12,
                             callbacks: {
-                                label: function (context) { return 'Profondeur: ' + context.parsed.y.toFixed(1) + ' m'; },
-                                title: function (context) { return 'Temps: ' + context[0].parsed.x.toFixed(1) + ' min'; }
+                                label: function(context) { return 'Profondeur: ' + context.parsed.y.toFixed(1) + ' m'; },
+                                title: function(context) { return 'Temps: ' + context[0].parsed.x.toFixed(1) + ' min'; }
                             }
                         },
                         legend: { display: false }
@@ -681,7 +592,7 @@
         }
 
         // Fonction d'exportation pour GitHub Pages
-        window.downloadHTML = function () {
+        window.downloadHTML = function() {
             const htmlContent = document.documentElement.outerHTML;
             const blob = new Blob([htmlContent], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
@@ -695,5 +606,6 @@
         };
     </script>
 </body>
-
 </html>
+
+

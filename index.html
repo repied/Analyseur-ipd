@@ -723,20 +723,28 @@
                 });
 
                 const data = await response.json();
+                console.log("Gemini API Response:", data);
 
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                if (data.error) {
+                    throw new Error(data.error.message || "Erreur API inconnue");
+                }
+
+                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0].text) {
                     let text = data.candidates[0].content.parts[0].text;
                     // Conversion basique Markdown vers HTML pour l'affichage
                     resultDiv.innerHTML = formatMarkdown(text);
                     resultDiv.classList.remove('hidden');
+                } else if (data.candidates && data.candidates[0].finishReason === 'SAFETY') {
+                    throw new Error("La réponse a été bloquée par les filtres de sécurité de l'IA.");
                 } else {
-                    throw new Error("Réponse inattendue de l'API Gemini");
+                    throw new Error("Format de réponse inattendu (vérifiez la console pour plus de détails).");
                 }
             } catch (err) {
-                console.error(err);
+                console.error("Erreur askThibault:", err);
                 resultDiv.innerHTML = `<div class="text-neonred p-4 border border-neonred/30 rounded-xl bg-red-950/20">
-                    Erreur lors de la communication avec Thibault : ${err.message}.
-                    Vérifiez votre clé API et votre connexion.
+                    <p class="font-bold mb-1">Erreur lors de la communication avec Thibault :</p>
+                    <p class="text-sm opacity-90">${err.message}</p>
+                    <p class="mt-2 text-xs text-slate-500 italic">Vérifiez votre clé API, votre quota et votre connexion internet.</p>
                 </div>`;
                 resultDiv.classList.remove('hidden');
             } finally {

@@ -714,7 +714,8 @@
             `;
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                // Utilisation du modèle stable gemini-2.0-flash pour 2026
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -754,16 +755,28 @@
             }
         };
 
-        // Fonction utilitaire de formatage Markdown très simple
+        // Fonction utilitaire de formatage Markdown
         function formatMarkdown(text) {
-            return text
-                .replace(/^### (.*$)/gim, '<h4 class="text-xl font-bold text-white mt-6 mb-3">$1</h4>')
-                .replace(/^## (.*$)/gim, '<h3 class="text-2xl font-bold text-neonblue mt-8 mb-4">$1</h3>')
-                .replace(/^# (.*$)/gim, '<h2 class="text-3xl font-black text-accent mt-10 mb-6">$1</h2>')
-                .replace(/\*\*(.*)\*\*/gim, '<strong class="text-white font-bold">$1</strong>')
-                .replace(/\*(.*)\*/gim, '<em class="italic text-slate-400">$1</em>')
-                .replace(/^\- (.*$)/gim, '<li class="ml-4 list-disc mb-1">$1</li>')
-                .replace(/\n/gim, '<br>');
+            // Remplacer les titres (plusieurs niveaux)
+            text = text.replace(/^### (.*$)/gim, '<h4 class="text-xl font-bold text-white mt-6 mb-3">$1</h4>');
+            text = text.replace(/^## (.*$)/gim, '<h3 class="text-2xl font-bold text-neonblue mt-8 mb-4">$1</h3>');
+            text = text.replace(/^# (.*$)/gim, '<h2 class="text-3xl font-black text-accent mt-10 mb-6">$1</h2>');
+
+            // Remplacer le gras (**texte** ou __texte__)
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>');
+            text = text.replace(/__(.*?)__/g, '<strong class="text-white font-bold">$1</strong>');
+
+            // Remplacer l'italique (*texte* ou _texte_)
+            text = text.replace(/\*(.*?)\*/g, '<em class="italic text-slate-400">$1</em>');
+            text = text.replace(/_(.*?)_/g, '<em class="italic text-slate-400">$1</em>');
+
+            // Gérer les listes (puces)
+            text = text.replace(/^\s*[\-\*]\s+(.*$)/gim, '<li class="ml-6 list-disc mb-1 text-slate-300">$1</li>');
+
+            // Remplacer les sauts de ligne par <br>, sauf s'ils sont déjà suivis par un tag block
+            text = text.replace(/\n/gim, '<br>');
+
+            return text;
         }
 
         // Fonction d'exportation pour GitHub Pages

@@ -1,0 +1,35 @@
+{
+    "name": "Web Dev DevContainer",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+    "forwardPorts": [
+        5500,
+        5502
+    ],
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "workbench.preferredDarkColorTheme": "Dracula Theme",
+                "workbench.preferredLightColorTheme": "Dracula Theme"
+            },
+            "extensions": [
+                "ms-playwright.playwright",
+                "usernamehw.errorlens",
+                "wayou.vscode-todo-highlight",
+                "streetsidesoftware.code-spell-checker-french",
+                "streetsidesoftware.code-spell-checker",
+                "github.vscode-github-actions",
+                "dracula-theme.theme-dracula",
+                "github.copilot-chat",
+                "mechatroner.rainbow-csv"
+            ]
+        }
+    },
+    "remoteUser": "node",
+    "postCreateCommand": "bash .devcontainer/post-create.sh"
+}

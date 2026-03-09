@@ -7,13 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link rel="stylesheet" href="src/css/style.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        darkbg: '#0f172a',
+                        darkbg: '#0b1120',
                         cardbg: '#1e293b',
                         neonblue: '#38bdf8',
                         neonred: '#f43f5e',
@@ -24,101 +25,106 @@
             }
         }
     </script>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .dragover { background-color: rgba(56, 189, 248, 0.1); border-color: #38bdf8; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-    </style>
 </head>
-<body class="min-h-screen p-4 md:p-8">
+<body class="min-h-screen p-4 md:p-8 relative">
 
-    <div class="max-w-6xl mx-auto space-y-8">
+    <div class="max-w-6xl mx-auto space-y-8 relative z-10">
         <!-- En-tête -->
-        <header class="text-center space-y-3">
-            <div class="inline-block bg-accent/20 text-accent font-semibold px-3 py-1 rounded-full text-sm uppercase tracking-widest border border-accent/30 shadow-[0_0_15px_rgba(139,92,246,0.3)]">
+        <header class="text-center space-y-3 pt-6">
+            <div class="inline-block glass-panel text-accent font-semibold px-4 py-1.5 rounded-full text-sm uppercase tracking-widest shadow-[0_0_15px_rgba(139,92,246,0.2)]">
                 Laboratoire d'Analyse - FFESSM Niveau 4
             </div>
-            <h1 class="text-3xl md:text-5xl font-extrabold text-white flex items-center justify-center gap-4 mt-4 drop-shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue"><path d="M2 12h20"/><path d="M12 2v20"/><path d="m4.93 4.93 14.14 14.14"/><path d="m19.07 4.93-14.14 14.14"/></svg>
-                Dive Tracker Pro
+            <h1 class="text-4xl md:text-6xl font-black text-white flex items-center justify-center gap-4 mt-6 drop-shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#blue-purple-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <defs>
+                        <linearGradient id="blue-purple-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#38bdf8" />
+                            <stop offset="100%" stop-color="#8b5cf6" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M2 12h20"/><path d="M12 2v20"/><path d="m4.93 4.93 14.14 14.14"/><path d="m19.07 4.93-14.14 14.14"/>
+                </svg>
+                <span class="gradient-text">Dive Tracker Pro</span>
             </h1>
-            <p class="text-slate-400 max-w-2xl mx-auto">Importez votre télémétrie. L'algorithme classifie les phases, isole les remontées assistées et évalue votre technique selon les standards fédéraux.</p>
+            <p class="text-slate-400 max-w-2xl mx-auto mt-4 text-lg">Importez votre télémétrie. L'algorithme classifie les phases, isole les remontées assistées et évalue votre technique selon les standards fédéraux.</p>
 
             <!-- Gemini API Key Input -->
-            <div class="mt-6 max-w-md mx-auto relative group">
+            <div class="mt-8 max-w-md mx-auto relative group">
                 <input type="password" id="geminiKey" placeholder="Clé API Gemini (Optionnel)"
-                    class="w-full bg-slate-900/50 border border-slate-700 rounded-full py-2 px-10 text-sm text-slate-300 focus:outline-none focus:border-neonblue/50 transition-all placeholder:text-slate-600" />
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-neonblue transition-colors">
+                    class="w-full glass-panel border-slate-700/50 rounded-full py-3 px-12 text-sm text-slate-300 focus:outline-none focus:border-neonblue/50 transition-all placeholder:text-slate-500 shadow-inner" />
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-neonblue transition-colors">
                     <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
             </div>
         </header>
 
         <!-- Zone de dépôt -->
-        <div id="dropzone" class="border-2 border-dashed border-slate-600 rounded-3xl p-12 text-center transition-all duration-300 cursor-pointer bg-cardbg hover:bg-slate-800 flex flex-col items-center justify-center min-h-[250px] shadow-xl relative overflow-hidden group">
-            <div class="absolute inset-0 bg-gradient-to-b from-neonblue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="flex gap-4 mb-4 relative z-10 group-hover:scale-110 transition-transform duration-300">
+        <div id="dropzone" class="border-2 border-dashed border-slate-600 rounded-[2.5rem] p-12 text-center transition-all duration-300 cursor-pointer glass-panel hover:bg-slate-800/80 flex flex-col items-center justify-center min-h-[280px] shadow-2xl relative overflow-hidden group mt-10">
+            <div class="absolute inset-0 bg-gradient-to-b from-neonblue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div class="flex gap-6 mb-6 relative z-10 group-hover:scale-110 transition-transform duration-500">
                 <!-- Icone FIT/Garmin -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
                 <!-- Icone CSV/Shearwater -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-neongreen"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-neongreen drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
             </div>
-            <h3 class="text-2xl font-bold text-white mb-2 relative z-10">Glissez un fichier .FIT ou .CSV ici</h3>
-            <p class="text-slate-400 mb-6 relative z-10">Compatible Garmin Descent (.fit) et Shearwater Cloud (.csv)</p>
-            <!-- L'attribut 'accept' a été retiré pour contourner le blocage système (OS) sur les extensions non-standards comme le .fit -->
+            <h3 class="text-3xl font-bold text-white mb-3 relative z-10">Glissez un fichier .FIT ou .CSV ici</h3>
+            <p class="text-slate-400 mb-8 relative z-10 text-lg">Compatible Garmin Descent (.fit) et Shearwater Cloud (.csv)</p>
             <input type="file" id="fileInput" class="hidden" />
-            <button onclick="document.getElementById('fileInput').click()" class="relative z-10 bg-neonblue hover:bg-sky-400 text-slate-900 font-bold py-3 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(56,189,248,0.4)] hover:shadow-[0_0_30px_rgba(56,189,248,0.6)]">
+            <button onclick="document.getElementById('fileInput').click()" class="relative z-10 bg-gradient-to-r from-neonblue to-blue-500 hover:from-sky-400 hover:to-blue-400 text-slate-900 font-bold text-lg py-4 px-10 rounded-full transition-all shadow-[0_0_20px_rgba(56,189,248,0.4)] hover:shadow-[0_0_30px_rgba(56,189,248,0.6)] transform hover:-translate-y-1">
                 Parcourir les fichiers
             </button>
-            <div id="loadingMsg" class="hidden absolute inset-0 bg-cardbg/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center">
-                <svg class="animate-spin h-10 w-10 text-neonblue mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <span class="text-neonblue font-bold tracking-widest uppercase">Analyse Télémétrique...</span>
+            <div id="loadingMsg" class="hidden absolute inset-0 bg-darkbg/90 backdrop-blur-md z-20 flex flex-col items-center justify-center">
+                <svg class="animate-spin h-12 w-12 text-neonblue mb-4 drop-shadow-[0_0_10px_rgba(56,189,248,0.8)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span class="text-neonblue font-bold tracking-widest uppercase text-lg">Analyse Télémétrique...</span>
             </div>
-            <div id="errorMsg" class="hidden absolute bottom-4 left-1/2 -translate-x-1/2 text-neonred font-medium bg-red-950/80 px-4 py-2 rounded-full border border-neonred/50 z-20 whitespace-nowrap"></div>
+            <div id="errorMsg" class="hidden absolute bottom-6 left-1/2 -translate-x-1/2 text-neonred font-medium bg-red-950/90 px-6 py-3 rounded-full border border-neonred/50 z-20 whitespace-nowrap shadow-lg"></div>
         </div>
 
         <!-- Tableau de bord -->
-        <div id="dashboard" class="hidden space-y-8 animate-[fadeIn_0.5s_ease-out]">
+        <div id="dashboard" class="hidden space-y-10 animate-[fadeIn_0.5s_ease-out]">
             
             <!-- Statistiques Globales -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-cardbg p-5 rounded-2xl shadow-lg border border-slate-700/50 flex flex-col items-center text-center relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-neonblue/10 rounded-full blur-xl"></div>
-                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Prof. Max</span>
-                    <span id="statMaxDepth" class="text-3xl font-black text-white">-- <span class="text-lg text-slate-500 font-medium">m</span></span>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center relative overflow-hidden card-hover-effect">
+                    <div class="absolute -right-4 -top-4 w-20 h-20 bg-neonblue/10 rounded-full blur-2xl"></div>
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Prof. Max</span>
+                    <span id="statMaxDepth" class="text-4xl font-black text-white drop-shadow-md">-- <span class="text-xl text-slate-500 font-medium">m</span></span>
                 </div>
-                <div class="bg-cardbg p-5 rounded-2xl shadow-lg border border-slate-700/50 flex flex-col items-center text-center relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-accent/10 rounded-full blur-xl"></div>
-                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Temps Total</span>
-                    <span id="statDuration" class="text-3xl font-black text-white">-- <span class="text-lg text-slate-500 font-medium">min</span></span>
+                <div class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center relative overflow-hidden card-hover-effect">
+                    <div class="absolute -right-4 -top-4 w-20 h-20 bg-accent/10 rounded-full blur-2xl"></div>
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Temps Total</span>
+                    <span id="statDuration" class="text-4xl font-black text-white drop-shadow-md">-- <span class="text-xl text-slate-500 font-medium">min</span></span>
                 </div>
-                <div class="bg-cardbg p-5 rounded-2xl shadow-lg border border-slate-700/50 flex flex-col items-center text-center relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-neonred/10 rounded-full blur-xl"></div>
-                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Exercices Isolés</span>
-                    <span id="statAscentCount" class="text-3xl font-black text-neonred drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">--</span>
+                <div class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center relative overflow-hidden card-hover-effect">
+                    <div class="absolute -right-4 -top-4 w-20 h-20 bg-neonred/10 rounded-full blur-2xl"></div>
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Exercices Isolés</span>
+                    <span id="statAscentCount" class="text-4xl font-black text-neonred drop-shadow-[0_0_12px_rgba(244,63,94,0.6)]">--</span>
                 </div>
-                <div class="bg-cardbg p-5 rounded-2xl shadow-lg border border-slate-700/50 flex flex-col items-center text-center relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-neongreen/10 rounded-full blur-xl"></div>
-                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Palier / Sécu</span>
-                    <span id="statSafety" class="text-2xl font-black text-neongreen mt-1">--</span>
+                <div class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center relative overflow-hidden card-hover-effect">
+                    <div class="absolute -right-4 -top-4 w-20 h-20 bg-neongreen/10 rounded-full blur-2xl"></div>
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Palier / Sécu</span>
+                    <span id="statSafety" class="text-3xl font-black text-neongreen mt-1 drop-shadow-[0_0_12px_rgba(16,185,129,0.4)]">--</span>
                 </div>
             </div>
 
             <!-- Graphique Haute Fidélité -->
-            <div class="bg-cardbg p-6 rounded-3xl shadow-xl border border-slate-700/50">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <div class="glass-panel p-8 rounded-[2.5rem]">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                        <div class="bg-neonblue/20 p-2 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
                         Profil Multiphase
                     </h3>
-                    <div class="flex flex-wrap gap-3 text-xs font-medium bg-slate-900 px-4 py-2 rounded-full border border-slate-700">
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#0ea5e9] shadow-[0_0_8px_#0ea5e9]"></span> Descente</span>
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#f43f5e] shadow-[0_0_8px_#f43f5e]"></span> Remontée Assistée</span>
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]"></span> Palier/Fin</span>
-                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#64748b]"></span> Fond/Explo</span>
+                    <div class="flex flex-wrap gap-3 text-xs font-semibold bg-slate-900/60 px-5 py-2.5 rounded-full border border-slate-700/50 backdrop-blur-sm">
+                        <span class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full bg-[#0ea5e9] shadow-[0_0_8px_#0ea5e9]"></span> Descente</span>
+                        <span class="flex items-center gap-2 ml-2"><span class="w-3.5 h-3.5 rounded-full bg-[#f43f5e] shadow-[0_0_8px_#f43f5e]"></span> Remontée Assistée</span>
+                        <span class="flex items-center gap-2 ml-2"><span class="w-3.5 h-3.5 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]"></span> Palier/Fin</span>
+                        <span class="flex items-center gap-2 ml-2"><span class="w-3.5 h-3.5 rounded-full bg-[#64748b]"></span> Fond/Explo</span>
                     </div>
                 </div>
                 <div class="relative h-[450px] w-full">
@@ -128,659 +134,55 @@
 
             <!-- Rapport d'Analyse N4 -->
             <div class="space-y-6">
-                <h2 class="text-2xl font-bold text-white flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <h2 class="text-3xl font-black text-white flex items-center gap-4">
+                    <div class="bg-accent/20 p-2.5 rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </div>
                     Évaluation Technique FFESSM
                 </h2>
 
-                <div id="ascentsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div id="ascentsContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Les cartes générées dynamiquement -->
                 </div>
             </div>
 
             <!-- AI Analysis Section -->
-            <div id="aiAnalysisSection" class="hidden space-y-6 pt-6 border-t border-slate-800">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <h2 class="text-2xl font-bold text-white flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue"><path d="M12 2v20"/><path d="M2 12h20"/><path d="m4.93 4.93 14.14 14.14"/><path d="m19.07 4.93-14.14 14.14"/></svg>
+            <div id="aiAnalysisSection" class="hidden space-y-6 pt-10 border-t border-slate-800/50">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                    <h2 class="text-3xl font-black text-white flex items-center gap-4">
+                        <div class="bg-neonblue/20 p-2.5 rounded-2xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue"><path d="M12 2v20"/><path d="M2 12h20"/><path d="m4.93 4.93 14.14 14.14"/><path d="m19.07 4.93-14.14 14.14"/></svg>
+                        </div>
                         Analyse par Thibault DLLM Willer
                     </h2>
-                    <button id="btnAskThibault" onclick="askThibault()" class="bg-gradient-to-r from-neonblue to-accent hover:from-sky-400 hover:to-purple-500 text-slate-900 font-bold py-2 px-6 rounded-full transition-all shadow-lg flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <button id="btnAskThibault" onclick="askThibault()" class="bg-gradient-to-r from-neonblue to-accent hover:from-sky-400 hover:to-purple-500 text-slate-900 font-bold py-3 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(139,92,246,0.4)] flex items-center gap-3 transform hover:-translate-y-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         Demander l'avis de l'expert
                     </button>
                 </div>
-                <div id="aiResponseContent" class="bg-slate-900/50 border border-slate-700 rounded-3xl p-6 md:p-8 text-slate-300 leading-relaxed min-h-[100px] relative overflow-hidden">
-                    <div id="aiPlaceholder" class="text-slate-500 italic text-center py-4">
+                <div id="aiResponseContent" class="glass-panel rounded-[2.5rem] p-8 md:p-10 text-slate-300 leading-relaxed min-h-[150px] relative overflow-hidden">
+                    <div id="aiPlaceholder" class="text-slate-500 italic text-center py-8 text-lg">
                         Cliquez sur le bouton pour générer une analyse détaillée par notre expert IA...
                     </div>
-                    <div id="aiLoading" class="hidden flex flex-col items-center justify-center py-8">
-                        <svg class="animate-spin h-8 w-8 text-neonblue mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        <span class="text-slate-400 font-medium">Réflexion de Thibault en cours...</span>
+                    <div id="aiLoading" class="hidden flex flex-col items-center justify-center py-12">
+                        <svg class="animate-spin h-12 w-12 text-accent mb-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <span class="text-accent font-medium text-lg tracking-wide">Réflexion de Thibault en cours...</span>
                     </div>
-                    <div id="aiResult" class="hidden prose prose-invert max-w-none">
+                    <div id="aiResult" class="hidden prose prose-invert prose-lg max-w-none prose-headings:text-neonblue prose-a:text-accent prose-strong:text-white">
                         <!-- AI Response will be injected here -->
                     </div>
                 </div>
             </div>
             
             <!-- Export Section -->
-            <div class="text-center pt-8 border-t border-slate-800">
-                <button onclick="downloadHTML()" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-6 py-3 rounded-full text-sm font-semibold transition-colors border border-slate-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                    Télécharger cette application (index.html) pour GitHub Pages
-                </button>
+            <div class="text-center pt-10 pb-6">
+                <p class="text-slate-500 text-sm mb-4">L'application Dive Tracker Pro est propulsée par l'API Gemini et Chart.js</p>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        // Import module for FIT parsing (Garmin)
-        import FitParser from 'https://esm.sh/fit-file-parser@1.9.0';
+    <!-- Scripts externalisés -->
+    <script type="module" src="src/js/app.js"></script>
 
-        const dropzone = document.getElementById('dropzone');
-        const fileInput = document.getElementById('fileInput');
-        const dashboard = document.getElementById('dashboard');
-        const loadingMsg = document.getElementById('loadingMsg');
-        const errorMsg = document.getElementById('errorMsg');
-        const geminiInput = document.getElementById('geminiKey');
-
-        // Persistance de la clé API
-        geminiInput.value = localStorage.getItem('gemini_api_key') || '';
-        geminiInput.addEventListener('change', (e) => {
-            localStorage.setItem('gemini_api_key', e.target.value);
-        });
-        
-        let diveChartInstance = null;
-        let lastAnalysisData = null; // Stockage global pour l'IA
-
-        // Drag and drop events
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropzone.addEventListener(eventName, preventDefaults, false);
-        });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropzone.addEventListener(eventName, () => dropzone.classList.add('dragover'), false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropzone.addEventListener(eventName, () => dropzone.classList.remove('dragover'), false);
-        });
-
-        dropzone.addEventListener('drop', handleDrop, false);
-        fileInput.addEventListener('change', (e) => handleFiles(e.target.files), false);
-
-        function handleDrop(e) { handleFiles(e.dataTransfer.files); }
-
-        function handleFiles(files) {
-            if (files.length === 0) return;
-            const file = files[0];
-            const ext = file.name.split('.').pop().toLowerCase();
-            
-            // Validation de l'extension directement via JavaScript
-            if (ext !== 'fit' && ext !== 'csv') {
-                showError("Format non supporté. Veuillez sélectionner un fichier .fit (Garmin) ou .csv (Shearwater)");
-                // Reset file input so user can try again
-                fileInput.value = ''; 
-                return;
-            }
-
-            hideError();
-            loadingMsg.classList.remove('hidden');
-            dashboard.classList.add('hidden');
-
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                if (ext === 'fit') {
-                    parseFitFile(e.target.result);
-                } else if (ext === 'csv') {
-                    parseCSVFile(e.target.result);
-                }
-            };
-            
-            reader.onerror = function() { 
-                showError("Erreur de lecture du fichier."); 
-                loadingMsg.classList.add('hidden'); 
-            };
-
-            if (ext === 'fit') {
-                reader.readAsArrayBuffer(file);
-            } else {
-                reader.readAsText(file);
-            }
-        }
-
-        function showError(msg) {
-            errorMsg.textContent = msg;
-            errorMsg.classList.remove('hidden');
-            loadingMsg.classList.add('hidden');
-        }
-        function hideError() { errorMsg.classList.add('hidden'); }
-
-        // --- PARSER GARMIN (.FIT) ---
-        function parseFitFile(buffer) {
-            try {
-                const fitParser = new FitParser({ force: true, lengthUnit: 'm', elapsedRecordField: true });
-                const u8 = new Uint8Array(buffer);
-                fitParser.parse(u8, function(error, data) {
-                    if (error) { showError("Impossible de décoder ce fichier .fit."); return; }
-                    
-                    if (!data || !data.records || data.records.length === 0) {
-                        showError("Aucune donnée d'enregistrement trouvée.");
-                        return;
-                    }
-
-                    let records = data.records;
-                    let diveProfile = [];
-                    let maxRaw = 0;
-                    
-                    records.forEach(r => { if (r.depth !== undefined && parseFloat(r.depth) > maxRaw) maxRaw = parseFloat(r.depth); });
-                    const depthFactor = maxRaw > 500 ? 1000 : 1; // Correction pour les montres en millimètres
-
-                    const startTime = records[0].timestamp.getTime();
-
-                    records.forEach(record => {
-                        if (record.depth !== undefined) {
-                            diveProfile.push({
-                                x: (record.timestamp.getTime() - startTime) / 60000,
-                                y: parseFloat(record.depth) / depthFactor,
-                                speed: 0,
-                                phase: 'bottom'
-                            });
-                        }
-                    });
-
-                    runAnalysis(diveProfile);
-                });
-            } catch (err) {
-                showError("Erreur lors du chargement de la bibliothèque Garmin.");
-            }
-        }
-
-        // --- PARSER SHEARWATER (.CSV) ---
-        function parseCSVFile(text) {
-            window.Papa.parse(text, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    if (results.errors.length > 0 && results.data.length === 0) {
-                        showError("Le fichier CSV semble corrompu ou illisible.");
-                        return;
-                    }
-
-                    let data = results.data;
-                    let keys = Object.keys(data[0]);
-                    
-                    // Trouver intelligemment les colonnes Temps et Profondeur
-                    let timeKey = keys.find(k => k.toLowerCase().includes('time') || k.toLowerCase().includes('temps'));
-                    let depthKey = keys.find(k => k.toLowerCase().includes('depth') || k.toLowerCase().includes('profondeur'));
-
-                    if (!timeKey || !depthKey) {
-                        showError("Colonnes 'Time' ou 'Depth' introuvables dans ce CSV. Est-ce bien un export Shearwater ?");
-                        return;
-                    }
-
-                    let diveProfile = [];
-                    data.forEach(row => {
-                        let tRaw = row[timeKey];
-                        let dRaw = row[depthKey];
-                        
-                        if (tRaw !== undefined && dRaw !== undefined && tRaw !== '' && dRaw !== '') {
-                            let tStr = String(tRaw).trim();
-                            let t;
-                            
-                            // Support du format MM:SS ou Minutes décimales
-                            if (tStr.includes(':')) {
-                                let parts = tStr.split(':');
-                                t = parseInt(parts[0]) + parseFloat(parts[1])/60;
-                            } else {
-                                t = parseFloat(tStr.replace(',', '.'));
-                            }
-                            
-                            let d = parseFloat(String(dRaw).replace(',', '.')); 
-
-                            if (!isNaN(t) && !isNaN(d)) {
-                                diveProfile.push({ x: t, y: d, speed: 0, phase: 'bottom' });
-                            }
-                        }
-                    });
-
-                    if (diveProfile.length === 0) {
-                        showError("Aucune donnée numérique valide trouvée dans le CSV.");
-                        return;
-                    }
-                    
-                    // S'assurer que les points sont dans l'ordre chronologique
-                    diveProfile.sort((a,b) => a.x - b.x);
-
-                    runAnalysis(diveProfile);
-                }
-            });
-        }
-
-        // --- MOTEUR D'ANALYSE UNIFIÉ ---
-        function calculateSpeed(profile, index, windowSize = 5) {
-            let startIdx = Math.max(0, index - windowSize);
-            let dt = profile[index].x - profile[startIdx].x; // en minutes
-            if (dt <= 0) return 0;
-            let dd = profile[index].y - profile[startIdx].y; // positif = descente
-            return dd / dt; // m/min
-        }
-
-        window.runAnalysis = runAnalysis;
-        function runAnalysis(diveProfile) {
-            if (!diveProfile || diveProfile.length === 0) { 
-                showError("Profil de plongée vide après décodage."); 
-                return; 
-            }
-
-            let maxDepth = Math.max(...diveProfile.map(p => p.y));
-            let durationMin = diveProfile[diveProfile.length - 1].x;
-
-            // Calcul des vitesses lissées
-            for (let i = 0; i < diveProfile.length; i++) {
-                diveProfile[i].speed = calculateSpeed(diveProfile, i, 5); 
-            }
-
-            // Détection des Phases et Exercices
-            let ascents = [];
-            let currentAscent = null;
-            let timeAtSafetyStop = 0;
-
-            for (let i = 0; i < diveProfile.length; i++) {
-                let p = diveProfile[i];
-                let prevP = i > 0 ? diveProfile[i-1] : p;
-
-                // 1. Descentes
-                if (p.speed > 3) p.phase = 'descent';
-                
-                // 2. Paliers (2m à 6m, vitesse très faible)
-                if (p.y >= 2 && p.y <= 6 && Math.abs(p.speed) < 2) {
-                    p.phase = 'stop';
-                    timeAtSafetyStop += (p.x - prevP.x);
-                }
-
-                // 3. Remontées Assistées
-                if (p.speed < -2.5) {
-                    p.phase = 'ascent'; 
-                    
-                    if (!currentAscent) {
-                        currentAscent = { startIndex: i, startPoint: p, points: [], speeds: [], drops: 0, stops: 0 };
-                    }
-                    currentAscent.points.push(p);
-                    currentAscent.speeds.push(Math.abs(p.speed));
-                } else if (currentAscent) {
-                    if (p.speed > -1 && p.phase !== 'ascent') {
-                        currentAscent.endIndex = i;
-                        currentAscent.endPoint = p;
-                        let amplitude = currentAscent.startPoint.y - currentAscent.endPoint.y;
-                        
-                        if (amplitude >= 8) {
-                            ascents.push(currentAscent);
-                            for(let j = currentAscent.startIndex; j <= currentAscent.endIndex; j++) diveProfile[j].phase = 'ascent';
-                        } else {
-                            for(let j = currentAscent.startIndex; j <= i; j++) if(diveProfile[j].phase === 'ascent') diveProfile[j].phase = 'bottom';
-                        }
-                        currentAscent = null;
-                    } else if (p.speed <= -1) {
-                         currentAscent.points.push(p);
-                         currentAscent.speeds.push(Math.abs(p.speed));
-                         p.phase = 'ascent';
-                    }
-                }
-            }
-            
-            if (currentAscent) {
-                currentAscent.endPoint = diveProfile[diveProfile.length-1];
-                if (currentAscent.startPoint.y - currentAscent.endPoint.y >= 8) ascents.push(currentAscent);
-            }
-
-            // Notation FFESSM
-            ascents.forEach(asc => {
-                let amplitude = asc.startPoint.y - asc.endPoint.y;
-                let duration = asc.endPoint.x - asc.startPoint.x;
-                asc.avgSpeed = amplitude / duration; 
-                asc.maxSpeed = Math.max(...asc.speeds);
-                
-                let mean = asc.avgSpeed;
-                let variance = asc.speeds.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / asc.speeds.length;
-                asc.stdDev = Math.sqrt(variance);
-
-                asc.dropsDetected = 0;
-                asc.stopsDuration = 0; 
-                
-                for(let k = 1; k < asc.points.length; k++) {
-                    let diffY = asc.points[k].y - asc.points[k-1].y;
-                    let diffX = asc.points[k].x - asc.points[k-1].x;
-                    if (diffY > 0.3) asc.dropsDetected++;
-                    if (Math.abs(asc.points[k].speed) < 1.5) asc.stopsDuration += diffX;
-                }
-
-                let score = 10;
-                let remarks = [];
-
-                if (asc.avgSpeed < 9) { score -= 2; remarks.push("Trop lent (moy < 10m/min)"); }
-                else if (asc.avgSpeed > 16) { score -= 3; remarks.push("Trop rapide (moy > 15m/min)"); }
-                else { remarks.push("Excellente vitesse moyenne"); }
-
-                if (asc.maxSpeed > 22) { score -= 3; remarks.push("Pic dangereux (> 20m/min)"); }
-                else if (asc.maxSpeed > 18) { score -= 1.5; remarks.push("Envolée locale constatée"); }
-
-                if (asc.dropsDetected > 2) { score -= 4; remarks.push("Redescentes/Yoyo pénalisants"); }
-                
-                if (asc.stdDev > 4) { score -= 1.5; remarks.push("Vitesse irrégulière (à-coups)"); }
-                else if (asc.stdDev <= 2.5 && asc.avgSpeed >= 9 && asc.avgSpeed <= 16) { remarks.push("Vitesse très constante"); }
-
-                if (asc.stopsDuration > 0.2) { score -= 1; remarks.push("Arrêt intempestif marqué"); }
-
-                asc.score = Math.max(0, Math.min(10, score));
-                asc.remarks = remarks;
-            });
-
-            // Mise à jour de l'UI
-            document.getElementById('statMaxDepth').innerHTML = `${maxDepth.toFixed(1)} <span class="text-lg text-slate-500 font-medium">m</span>`;
-            document.getElementById('statDuration').innerHTML = `${Math.floor(durationMin)} <span class="text-lg text-slate-500 font-medium">min</span>`;
-            document.getElementById('statAscentCount').textContent = ascents.length;
-            
-            let safetyText = timeAtSafetyStop > 2 ? "Validé" : (timeAtSafetyStop > 0.5 ? "Tronqué" : "Absent");
-            document.getElementById('statSafety').textContent = safetyText;
-            if(safetyText === "Validé") document.getElementById('statSafety').className = "text-2xl font-black text-neongreen mt-1";
-            else if(safetyText === "Tronqué") document.getElementById('statSafety').className = "text-2xl font-black text-orange-400 mt-1";
-            else document.getElementById('statSafety').className = "text-2xl font-black text-slate-500 mt-1";
-
-            loadingMsg.classList.add('hidden');
-            renderAscentCards(ascents);
-            drawChart(diveProfile);
-
-            // Préparation des données pour l'IA
-            lastAnalysisData = {
-                maxDepth: maxDepth.toFixed(1),
-                durationMin: Math.floor(durationMin),
-                safetyStatus: safetyText,
-                ascents: ascents.map((a, i) => ({
-                    id: i + 1,
-                    startDepth: a.startPoint.y.toFixed(1),
-                    endDepth: a.endPoint.y.toFixed(1),
-                    avgSpeed: a.avgSpeed.toFixed(1),
-                    maxSpeed: a.maxSpeed.toFixed(1),
-                    score: a.score,
-                    remarks: a.remarks
-                }))
-            };
-
-            // Afficher la section IA
-            document.getElementById('aiAnalysisSection').classList.remove('hidden');
-            document.getElementById('aiPlaceholder').classList.remove('hidden');
-            document.getElementById('aiLoading').classList.add('hidden');
-            document.getElementById('aiResult').classList.add('hidden');
-
-            dashboard.classList.remove('hidden');
-        }
-
-        function renderAscentCards(ascents) {
-            const container = document.getElementById('ascentsContainer');
-            container.innerHTML = '';
-
-            if (ascents.length === 0) {
-                container.innerHTML = `<div class="col-span-1 md:col-span-2 text-center p-12 bg-cardbg rounded-3xl border border-slate-700 text-slate-400">Aucune remontée > 8m détectée. L'algorithme n'a pas pu isoler d'exercice spécifique.</div>`;
-                return;
-            }
-
-            ascents.forEach((asc, idx) => {
-                let scoreColor = asc.score >= 8 ? 'text-neongreen drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 
-                                 asc.score >= 5 ? 'text-orange-400' : 'text-neonred drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]';
-                let borderColor = asc.score >= 8 ? 'border-neongreen/30' : 
-                                  asc.score >= 5 ? 'border-orange-400/30' : 'border-neonred/30';
-                let bgGlow = asc.score >= 8 ? 'bg-neongreen/5' : asc.score >= 5 ? 'bg-orange-400/5' : 'bg-neonred/5';
-
-                const card = document.createElement('div');
-                card.className = `p-6 rounded-3xl border ${borderColor} bg-slate-800/50 relative overflow-hidden group shadow-lg`;
-                
-                let remarksHtml = asc.remarks.map(r => {
-                    let isGood = r.includes("Excellente") || r.includes("constante");
-                    let icon = isGood ? '✓' : '⚠️';
-                    let col = isGood ? 'text-neongreen' : 'text-slate-400';
-                    return `<li class="${col} flex gap-2 text-sm"><span class="font-bold">${icon}</span> ${r}</li>`;
-                }).join('');
-
-                card.innerHTML = `
-                    <div class="absolute inset-0 ${bgGlow} opacity-50"></div>
-                    <div class="relative z-10 flex justify-between items-start mb-4">
-                        <div>
-                            <h4 class="font-bold text-white text-xl flex items-center gap-2">
-                                <span class="bg-slate-700 text-slate-300 w-8 h-8 rounded-full flex items-center justify-center text-sm">${idx + 1}</span>
-                                Exercice RA
-                            </h4>
-                            <span class="text-xs text-slate-400 mt-1 block">Déclenché à ${asc.startPoint.x.toFixed(1)} min</span>
-                        </div>
-                        <div class="text-right">
-                            <span class="block text-xs uppercase tracking-widest text-slate-500 font-bold mb-1">Note FFESSM</span>
-                            <span class="text-4xl font-black ${scoreColor}">${asc.score}<span class="text-xl text-slate-500">/10</span></span>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-3 mb-5 relative z-10">
-                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700 text-center">
-                            <span class="block text-[10px] text-slate-500 uppercase mb-1">Trajet</span>
-                            <span class="font-bold text-white">${asc.startPoint.y.toFixed(0)}m &rarr; ${asc.endPoint.y.toFixed(0)}m</span>
-                        </div>
-                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700 text-center">
-                            <span class="block text-[10px] text-slate-500 uppercase mb-1">Vit. Moyenne</span>
-                            <span class="font-bold text-white">${asc.avgSpeed.toFixed(1)} <span class="text-xs text-slate-400">m/m</span></span>
-                        </div>
-                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700 text-center">
-                            <span class="block text-[10px] text-slate-500 uppercase mb-1">Pic Max</span>
-                            <span class="font-bold text-white">${asc.maxSpeed.toFixed(1)} <span class="text-xs text-slate-400">m/m</span></span>
-                        </div>
-                    </div>
-
-                    <div class="relative z-10 bg-slate-900/50 rounded-xl p-4 border border-slate-700/50">
-                        <span class="text-xs font-bold text-slate-500 uppercase mb-2 block">Détails de la prestation :</span>
-                        <ul class="space-y-1.5">${remarksHtml}</ul>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function drawChart(profileData) {
-            const ctx = document.getElementById('diveChart').getContext('2d');
-            const chartData = profileData.map(d => ({ x: d.x, y: d.y })); 
-
-            if (diveChartInstance) diveChartInstance.destroy();
-
-            diveChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: 'Profondeur',
-                        data: chartData,
-                        borderWidth: 3,
-                        pointRadius: 0,
-                        pointHoverRadius: 6,
-                        tension: 0.1,
-                        fill: false,
-                        segment: {
-                            borderColor: ctxSegment => {
-                                const p = profileData[ctxSegment.p1DataIndex];
-                                if (!p) return '#64748b';
-                                switch(p.phase) {
-                                    case 'ascent': return '#f43f5e'; 
-                                    case 'descent': return '#0ea5e9'; 
-                                    case 'stop': return '#10b981'; 
-                                    default: return '#64748b'; 
-                                }
-                            }
-                        }
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { intersect: false, mode: 'index' },
-                    plugins: {
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleColor: '#38bdf8',
-                            bodyColor: '#f8fafc',
-                            borderColor: '#334155',
-                            borderWidth: 1,
-                            padding: 12,
-                            callbacks: {
-                                label: function(context) { return 'Profondeur: ' + context.parsed.y.toFixed(1) + ' m'; },
-                                title: function(context) { return 'Temps: ' + context[0].parsed.x.toFixed(1) + ' min'; }
-                            }
-                        },
-                        legend: { display: false }
-                    },
-                    scales: {
-                        x: {
-                            type: 'linear',
-                            title: { display: true, text: 'Temps (minutes)', color: '#94a3b8' },
-                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
-                            ticks: { color: '#94a3b8' }
-                        },
-                        y: {
-                            reverse: true,
-                            beginAtZero: true,
-                            title: { display: true, text: 'Profondeur (m)', color: '#94a3b8' },
-                            grid: { color: 'rgba(51, 65, 85, 0.5)' },
-                            ticks: { color: '#94a3b8' }
-                        }
-                    }
-                }
-            });
-        }
-
-        // --- INTÉGRATION IA GEMINI ---
-        window.askThibault = async function() {
-            const apiKey = localStorage.getItem('gemini_api_key');
-            if (!apiKey) {
-                alert("Veuillez d'abord entrer votre clé API Gemini dans le champ prévu en haut de la page.");
-                return;
-            }
-
-            if (!lastAnalysisData) {
-                alert("Aucune donnée de plongée à analyser.");
-                return;
-            }
-
-            const placeholder = document.getElementById('aiPlaceholder');
-            const loading = document.getElementById('aiLoading');
-            const resultDiv = document.getElementById('aiResult');
-            const btn = document.getElementById('btnAskThibault');
-
-            placeholder.classList.add('hidden');
-            loading.classList.remove('hidden');
-            resultDiv.classList.add('hidden');
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-
-            const prompt = `
-                Tu es Thibault DLLM Willer, un expert légendaire de la plongée sous-marine, instructeur fédéral français (FFESSM) et spécialiste de la préparation au Niveau 4 (GP - Guide de Palanquée).
-                Tu possèdes une connaissance encyclopédique de la règlementation FFESSM, du Code du Sport français, et des standards de sécurité.
-                Ton ton est celui d'un DP (Directeur de Plongée) expérimenté : professionnel, technique, précis, parfois un peu bourru mais toujours bienveillant et pédagogue.
-
-                Voici les données télémétriques d'une plongée que je viens d'effectuer :
-                - Profondeur maximale : ${lastAnalysisData.maxDepth} m
-                - Durée totale : ${lastAnalysisData.durationMin} min
-                - Statut du palier de sécurité : ${lastAnalysisData.safetyStatus}
-
-                Détails des exercices de Remontée Assistée (RA) détectés :
-                ${lastAnalysisData.ascents.length > 0 ?
-                    lastAnalysisData.ascents.map(a => `
-                    Exercice RA n°${a.id}:
-                    - Trajet : de ${a.startDepth}m à ${a.endDepth}m
-                    - Vitesse moyenne : ${a.avgSpeed} m/min
-                    - Vitesse max : ${a.maxSpeed} m/min
-                    - Note automatique : ${a.score}/10
-                    - Remarques du système : ${a.remarks.join(', ')}
-                    `).join('\n') : "Aucun exercice de RA significatif détecté."
-                }
-
-                Analyse ces données en tant qu'expert FFESSM.
-                1. Commente la structure globale de la plongée (profil, profondeur, gestion du temps).
-                2. Détaille chaque exercice de RA : est-ce conforme aux attentes d'un futur Guide de Palanquée (N4) ? (Respect des 15m/min, stabilité, etc.)
-                3. Donne des conseils précis pour améliorer la technique (vitesse, gestion de la flottabilité, respect des paliers et de la règlementation).
-                4. Utilise des termes techniques français (GP, RA, DP, Code du Sport, courbe de sécurité, vitesse de remontée préconisée).
-
-                Réponds en utilisant un formatage Markdown élégant.
-            `;
-
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.0-flash:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }]
-                    })
-                });
-
-                const data = await response.json();
-                console.log("Gemini API Response:", data);
-
-                if (data.error) {
-                    throw new Error(data.error.message || "Erreur API inconnue");
-                }
-
-                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0].text) {
-                    let text = data.candidates[0].content.parts[0].text;
-                    // Conversion basique Markdown vers HTML pour l'affichage
-                    resultDiv.innerHTML = formatMarkdown(text);
-                    resultDiv.classList.remove('hidden');
-                } else if (data.candidates && data.candidates[0].finishReason === 'SAFETY') {
-                    throw new Error("La réponse a été bloquée par les filtres de sécurité de l'IA.");
-                } else {
-                    throw new Error("Format de réponse inattendu (vérifiez la console pour plus de détails).");
-                }
-            } catch (err) {
-                console.error("Erreur askThibault:", err);
-                resultDiv.innerHTML = `<div class="text-neonred p-4 border border-neonred/30 rounded-xl bg-red-950/20">
-                    <p class="font-bold mb-1">Erreur lors de la communication avec Thibault :</p>
-                    <p class="text-sm opacity-90">${err.message}</p>
-                    <p class="mt-2 text-xs text-slate-500 italic">Vérifiez votre clé API, votre quota et votre connexion internet.</p>
-                </div>`;
-                resultDiv.classList.remove('hidden');
-            } finally {
-                loading.classList.add('hidden');
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-        };
-
-        // Fonction utilitaire de formatage Markdown très simple
-        function formatMarkdown(text) {
-            return text
-                .replace(/^### (.*$)/gim, '<h4 class="text-xl font-bold text-white mt-6 mb-3">$1</h4>')
-                .replace(/^## (.*$)/gim, '<h3 class="text-2xl font-bold text-neonblue mt-8 mb-4">$1</h3>')
-                .replace(/^# (.*$)/gim, '<h2 class="text-3xl font-black text-accent mt-10 mb-6">$1</h2>')
-                .replace(/\*\*(.*)\*\*/gim, '<strong class="text-white font-bold">$1</strong>')
-                .replace(/\*(.*)\*/gim, '<em class="italic text-slate-400">$1</em>')
-                .replace(/^\- (.*$)/gim, '<li class="ml-4 list-disc mb-1">$1</li>')
-                .replace(/\n/gim, '<br>');
-        }
-
-        // Fonction d'exportation pour GitHub Pages
-        window.downloadHTML = function() {
-            const htmlContent = document.documentElement.outerHTML;
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'dive-tracker-pro.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        };
-    </script>
 </body>
 </html>
-
-

@@ -1,0 +1,16 @@
+{
+  "name": "analyseur-ipd",
+  "version": "1.0.0",
+  "description": "Analyseur de Plongée N4 - Garmin & Shearwater",
+  "private": true,
+  "scripts": {
+    "dev": "live-server --port=5500",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "live-server": "^1.2.0"
+  }
+}

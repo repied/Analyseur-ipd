@@ -3,13 +3,6 @@ const fileInput = document.getElementById('fileInput');
 const dashboard = document.getElementById('dashboard');
 const loadingMsg = document.getElementById('loadingMsg');
 const errorMsg = document.getElementById('errorMsg');
-const geminiInput = document.getElementById('geminiKey');
-
-// Persistance de la clé API
-geminiInput.value = localStorage.getItem('gemini_api_key') || '';
-geminiInput.addEventListener('change', (e) => {
-    localStorage.setItem('gemini_api_key', e.target.value);
-});
 
 let diveChartInstance = null;
 let lastAnalysisData = null; // Stockage global pour l'IA

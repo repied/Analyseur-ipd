@@ -34,41 +34,12 @@
     <div class="max-w-6xl mx-auto space-y-8 relative z-10">
         <!-- En-tête -->
         <header class="text-center space-y-3 pt-6">
-            <div
-                class="inline-block glass-panel text-accent font-semibold px-4 py-1.5 rounded-full text-sm uppercase tracking-widest shadow-[0_0_15px_rgba(139,92,246,0.2)]">
-                Laboratoire d'Analyse - FFESSM Niveau 4
-            </div>
             <h1
                 class="text-4xl md:text-6xl font-black text-white flex items-center justify-center gap-4 mt-6 drop-shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                    stroke="url(#blue-purple-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <defs>
-                        <linearGradient id="blue-purple-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#38bdf8" />
-                            <stop offset="100%" stop-color="#8b5cf6" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M2 12h20" />
-                    <path d="M12 2v20" />
-                    <path d="m4.93 4.93 14.14 14.14" />
-                    <path d="m19.07 4.93-14.14 14.14" />
-                </svg>
-                <span class="gradient-text">Dive Tracker Pro</span>
+                <span class="gradient-text">Analyseur de Remontée</span>
             </h1>
-            <p class="text-slate-400 max-w-2xl mx-auto mt-4 text-lg">Importez votre télémétrie. L'algorithme classifie
-                les phases, isole les remontées assistées et évalue votre technique selon les standards fédéraux.</p>
-
-            <!-- Gemini API Key Input -->
-            <div class="mt-8 max-w-md mx-auto relative group">
-                <input type="password" id="geminiKey" placeholder="Clé API Gemini (Optionnel)"
-                    class="w-full glass-panel border-slate-700/50 rounded-full py-3 px-12 text-sm text-slate-300 focus:outline-none focus:border-neonblue/50 transition-all placeholder:text-slate-500 shadow-inner" />
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-neonblue transition-colors">
-                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
-            </div>
+            <p class="text-slate-400 max-w-2xl mx-auto mt-4 text-lg">Importez votre télémétrie. L'app isole les
+                remontées assistées et les évalue avec panache</p>
         </header>
 
         <!-- Zone de dépôt -->
@@ -79,16 +50,16 @@
             </div>
             <div class="flex gap-6 mb-6 relative z-10 group-hover:scale-110 transition-transform duration-500">
                 <!-- Icone FIT/Garmin -->
-                <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
+                <!-- <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                         class="text-neonblue drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]">
                         <circle cx="12" cy="12" r="10" />
                         <polyline points="12 6 12 12 16 14" />
                     </svg>
-                </div>
+                </div> -->
                 <!-- Icone CSV/Shearwater -->
-                <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
+                <!-- <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                         class="text-neongreen drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
@@ -98,9 +69,9 @@
                         <line x1="16" x2="8" y1="17" y2="17" />
                         <polyline points="10 9 9 9 8 9" />
                     </svg>
-                </div>
+                </div> -->
             </div>
-            <h3 class="text-3xl font-bold text-white mb-3 relative z-10">Glissez un fichier .FIT ou .CSV ici</h3>
+            <h3 class="text-3xl font-bold text-white mb-3 relative z-10">Uploader un fichier</h3>
             <p class="text-slate-400 mb-8 relative z-10 text-lg">Compatible Garmin Descent (.fit) et Shearwater Cloud
                 (.csv)</p>
             <input type="file" id="fileInput" class="hidden" />
@@ -207,7 +178,7 @@
                             <polyline points="10 9 9 9 8 9" />
                         </svg>
                     </div>
-                    Évaluation Technique FFESSM
+                    Analyse Technique
                 </h2>
 
                 <div id="ascentsContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -229,7 +200,7 @@
                                 <path d="m19.07 4.93-14.14 14.14" />
                             </svg>
                         </div>
-                        Analyse de l'Instructeur GSP
+                        Analyse par IA
                     </h2>
                     <button id="btnGetAIAnalysis" onclick="getAIAnalysis()"
                         class="bg-gradient-to-r from-neonblue to-accent hover:from-sky-400 hover:to-purple-500 text-slate-900 font-bold py-3 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(139,92,246,0.4)] flex items-center gap-3 transform hover:-translate-y-1">
@@ -237,7 +208,7 @@
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                         </svg>
-                        L'avis du GSP
+                        Demander a GSP Gpt!
                     </button>
                 </div>
                 <div id="aiResponseContent"
@@ -254,7 +225,7 @@
                                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                             </path>
                         </svg>
-                        <span class="text-accent font-medium text-lg tracking-wide">Analyse de l'instructeur en
+                        <span class="text-accent font-medium text-lg tracking-wide">Analyse IA en
                             cours...</span>
                     </div>
                     <div id="aiResult"
@@ -264,11 +235,6 @@
                 </div>
             </div>
 
-            <!-- Export Section -->
-            <div class="text-center pt-10 pb-6">
-                <p class="text-slate-500 text-sm mb-4">L'application Dive Tracker Pro est propulsée par l'API Gemini et
-                    Chart.js</p>
-            </div>
         </div>
     </div>
 

@@ -263,7 +263,7 @@ function runAnalysis(diveProfile) {
         } else if (currentAscent) {
             let dt = p.x - prevP.x;
             currentAscent.pauseTimer += dt;
-            if (currentAscent.pauseTimer > 0.5) {
+            if (currentAscent.pauseTimer > 0.3) {
                 ascents.push(currentAscent);
                 currentAscent = null;
             } else {
@@ -508,6 +508,24 @@ function drawChart(profileData) {
             maintainAspectRatio: false,
             interaction: { intersect: false, mode: 'index' },
             plugins: {
+                zoom: {
+                    pan: {
+                        enabled: true,
+                        mode: 'xy',
+                    },
+                    zoom: {
+                        wheel: {
+                            enabled: true,
+                        },
+                        drag: {
+                            enabled: true
+                        },
+                        pinch: {
+                            enabled: true
+                        },
+                        mode: 'xy',
+                    }
+                },
                 tooltip: {
                     backgroundColor: 'rgba(15, 23, 42, 0.9)',
                     titleColor: '#38bdf8',
@@ -539,6 +557,9 @@ function drawChart(profileData) {
             }
         }
     });
+
+    // Double click to reset zoom
+    diveChartInstance.canvas.ondblclick = () => diveChartInstance.resetZoom();
 }
 
 // --- INTÉGRATION IA GEMINI ---

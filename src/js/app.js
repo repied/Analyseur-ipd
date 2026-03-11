@@ -150,7 +150,19 @@ function parseFitFile(buffer, callback) {
 
 // --- PARSER SHEARWATER (.CSV) ---
 function parseCSVFile(text, callback) {
-    window.Papa.parse(text, {
+    // Shearwater CSV a un en-tête de métadonnées de 2 lignes, puis la ligne d'en-tête de données.
+    const lines = text.split('\n');
+    const headerRowIndex = lines.findIndex(line => line.startsWith('Time (sec)'));
+
+    if (headerRowIndex === -1) {
+        showError("En-tête de données CSV ('Time (sec)') introuvable. Est-ce un export Shearwater valide ?");
+        return;
+    }
+
+    // Reformer le texte CSV pour PapaParse, en commençant par la ligne d'en-tête.
+    const csvContent = lines.slice(headerRowIndex).join('\n');
+
+    window.Papa.parse(csvContent, {
         header: true,
         skipEmptyLines: true,
         complete: function (results) {
@@ -177,17 +189,8 @@ function parseCSVFile(text, callback) {
                 let dRaw = row[depthKey];
 
                 if (tRaw !== undefined && dRaw !== undefined && tRaw !== '' && dRaw !== '') {
-                    let tStr = String(tRaw).trim();
-                    let t;
-
-                    // Support du format MM:SS ou Minutes décimales
-                    if (tStr.includes(':')) {
-                        let parts = tStr.split(':');
-                        t = parseInt(parts[0]) + parseFloat(parts[1]) / 60;
-                    } else {
-                        t = parseFloat(tStr.replace(',', '.'));
-                    }
-
+                    // Le temps est en secondes, nous le convertissons en minutes pour le graphique.
+                    let t = parseFloat(String(tRaw).replace(',', '.')) / 60;
                     let d = parseFloat(String(dRaw).replace(',', '.'));
 
                     if (!isNaN(t) && !isNaN(d)) {

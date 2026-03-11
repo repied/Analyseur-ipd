@@ -499,7 +499,7 @@ window.askThibault = async function () {
     }
 
     if (!lastAnalysisData) {
-        alert("Aucune donnée de plongée à analyser.");
+        alert("Veuillez d'abord analyser un fichier de plongée avant de demander l'avis de l'expert.");
         return;
     }
 
@@ -514,30 +514,65 @@ window.askThibault = async function () {
     btn.disabled = true;
     btn.classList.add('opacity-50', 'cursor-not-allowed');
 
+    const prompt = `
+        Tu es Thibault DLLM Willer, un expert légendaire de la plongée sous-marine, instructeur fédéral français (FFESSM) et spécialiste de la préparation au Niveau 4 (GP - Guide de Palanquée).
+        Tu possèdes une connaissance encyclopédique de la règlementation FFESSM, du Code du Sport français, et des standards de sécurité.
+        Ton ton est celui d'un DP (Directeur de Plongée) expérimenté : professionnel, technique, précis, parfois un peu bourru mais toujours bienveillant et pédagogue.
+
+        Voici les données télémétriques d'une plongée que je viens d'effectuer :
+        - Profondeur maximale : ${lastAnalysisData.maxDepth} m
+        - Durée totale : ${lastAnalysisData.durationMin} min
+        - Statut du palier de sécurité : ${lastAnalysisData.safetyStatus}
+
+        Détails des exercices de Remontée Assistée (RA) détectés :
+        ${lastAnalysisData.ascents.length > 0 ?
+            lastAnalysisData.ascents.map(a => `
+            Exercice RA n°${a.id}:
+            - Trajet : de ${a.startDepth}m à ${a.endDepth}m
+            - Vitesse moyenne : ${a.avgSpeed} m/min
+            - Vitesse max : ${a.maxSpeed} m/min
+            - Note automatique : ${a.score}/10
+            - Remarques du système : ${a.remarks.join(', ')}
+            `).join('\\n') : "Aucun exercice de RA significatif détecté."
+        }
+
+        Analyse ces données en tant qu'expert FFESSM.
+        1. Commente la structure globale de la plongée (profil, profondeur, gestion du temps).
+        2. Évalue chaque exercice de RA en donnant des conseils techniques précis pour améliorer la note.
+        3. Conclus par un conseil général pour la préparation du Niveau 4.
+        Rédige ta réponse en Markdown.
+    `;
+
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
+                contents: [{
+                    parts: [{
+                        text: prompt
+                    }]
+                }]
             })
         });
 
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Erreur de l'API Gemini:", errorData);
+            throw new Error(`Erreur ${response.status}: ${errorData.error ? errorData.error.message : response.statusText}`);
+        }
+
         const data = await response.json();
 
-        if (data.error) {
-            throw new Error(data.error.message || "Erreur API inconnue");
+        if (!data.candidates || !data.candidates[0].content || !data.candidates[0].content.parts[0].text) {
+            console.error("Réponse de l'API malformée:", data);
+            throw new Error("La réponse de l'API est invalide ou ne contient pas de texte.");
         }
 
-        if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0].text) {
-            let text = data.candidates[0].content.parts[0].text;
-            resultDiv.innerHTML = formatMarkdown(text);
-            resultDiv.classList.remove('hidden');
-        } else if (data.candidates && data.candidates[0].finishReason === 'SAFETY') {
-            throw new Error("La réponse a été bloquée par les filtres de sécurité de l'IA.");
-        } else {
-            throw new Error("Format de réponse inattendu (vérifiez la console pour plus de détails).");
-        }
+        const resultText = data.candidates[0].content.parts[0].text;
+        resultDiv.innerHTML = formatMarkdown(resultText);
+        resultDiv.classList.remove('hidden');
+
     } catch (err) {
         console.error("Erreur askThibault:", err);
         resultDiv.innerHTML = `<div class="text-neonred p-4 border border-neonred/30 rounded-xl bg-red-950/20">

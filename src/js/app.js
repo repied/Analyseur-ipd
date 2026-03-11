@@ -491,7 +491,7 @@ function drawChart(profileData) {
 }
 
 // --- INTÉGRATION IA GEMINI ---
-window.askThibault = async function () {
+window.getAIAnalysis = async function () {
     const apiKey = localStorage.getItem('gemini_api_key');
     if (!apiKey) {
         alert("Veuillez d'abord entrer votre clé API Gemini dans le champ prévu en haut de la page.");
@@ -503,7 +503,7 @@ window.askThibault = async function () {
         return;
     }
 
-    const btn = document.getElementById('btnAskThibault');
+    const btn = document.getElementById('btnGetAIAnalysis');
     const placeholder = document.getElementById('aiPlaceholder');
     const loading = document.getElementById('aiLoading');
     const resultDiv = document.getElementById('aiResult');
@@ -515,32 +515,25 @@ window.askThibault = async function () {
     btn.classList.add('opacity-50', 'cursor-not-allowed');
 
     const prompt = `
-        Tu es Thibault DLLM Willer, un expert légendaire de la plongée sous-marine, instructeur fédéral français (FFESSM) et spécialiste de la préparation au Niveau 4 (GP - Guide de Palanquée).
-        Tu possèdes une connaissance encyclopédique de la règlementation FFESSM, du Code du Sport français, et des standards de sécurité.
-        Ton ton est celui d'un DP (Directeur de Plongée) expérimenté : professionnel, technique, précis, parfois un peu bourru mais toujours bienveillant et pédagogue.
+        Tu es un instructeur GSP (Guide de Palanquée) anonyme. Ton ton est direct, un peu bourru mais drôle, et tu utilises beaucoup d'émoticônes. Sois bref et va droit au but.
 
-        Voici les données télémétriques d'une plongée que je viens d'effectuer :
-        - Profondeur maximale : ${lastAnalysisData.maxDepth} m
-        - Durée totale : ${lastAnalysisData.durationMin} min
-        - Statut du palier de sécurité : ${lastAnalysisData.safetyStatus}
+        Voici les données de la plongée :
+        - Profondeur max : ${lastAnalysisData.maxDepth} m
+        - Durée : ${lastAnalysisData.durationMin} min
+        - Palier de sécu : ${lastAnalysisData.safetyStatus}
 
-        Détails des exercices de Remontée Assistée (RA) détectés :
+        Exercices de Remontée Assistée (RA) :
         ${lastAnalysisData.ascents.length > 0 ?
             lastAnalysisData.ascents.map(a => `
-            Exercice RA n°${a.id}:
-            - Trajet : de ${a.startDepth}m à ${a.endDepth}m
-            - Vitesse moyenne : ${a.avgSpeed} m/min
-            - Vitesse max : ${a.maxSpeed} m/min
-            - Note automatique : ${a.score}/10
-            - Remarques du système : ${a.remarks.join(', ')}
-            `).join('\\n') : "Aucun exercice de RA significatif détecté."
+            - RA n°${a.id} (${a.startDepth}m -> ${a.endDepth}m) : Vitesse moy: ${a.avgSpeed} m/min, Pic max: ${a.maxSpeed} m/min. Note: ${a.score}/10. Remarques: ${a.remarks.join(', ')}
+            `).join('\\n') : "Aucun exercice de RA significatif. On a bullé ? 🤔"
         }
 
-        Analyse ces données en tant qu'expert FFESSM.
-        1. Commente la structure globale de la plongée (profil, profondeur, gestion du temps).
-        2. Évalue chaque exercice de RA en donnant des conseils techniques précis pour améliorer la note.
-        3. Conclus par un conseil général pour la préparation du Niveau 4.
-        Rédige ta réponse en Markdown.
+        Ta mission, si tu l'acceptes 📜 :
+        1. Analyse globale : Un commentaire rapide sur le profil de la plongée.
+        2. Évaluation des RA : Pour chaque RA, UN conseil technique CLÉ pour s'améliorer. Sois direct !
+        3. Le conseil ULTIME : Une phrase choc pour la préparation N4.
+        Rédige en Markdown. Utilise des émojis pour rendre ça plus fun ! 😉
     `;
 
     try {
@@ -591,10 +584,10 @@ window.askThibault = async function () {
 function formatMarkdown(text) {
     return text
         // Headings
-        .replace(/^#### (.*$)/gim, '<h4 class="text-lg font-semibold text-white mt-4 mb-2">$1</h4>')
-        .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold text-neonblue mt-6 mb-3">$1</h3>')
-        .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold text-accent mt-8 mb-4 border-b-2 border-accent/30 pb-2">$1</h2>')
-        .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-black text-white mt-10 mb-6 border-b-4 border-neonblue/50 pb-3">$1</h1>')
+        .replace(/^#### (.*$)/gim, '<h4 class="text-lg font-semibold text-white mt-4 mb-2 flex items-center gap-2"><span class="text-accent">💡</span>$1</h4>')
+        .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold text-neonblue mt-6 mb-3 flex items-center gap-3"><span class="text-2xl">👉</span>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold text-accent mt-8 mb-4 border-b-2 border-accent/30 pb-2 flex items-center gap-3"><span class="text-3xl">🎯</span>$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-black text-white mt-10 mb-6 border-b-4 border-neonblue/50 pb-3 flex items-center gap-4"><span class="text-4xl">🌊</span>$1</h1>')
 
         // Bold and Italics
         .replace(/\*\*\*(.*?)\*\*\*/gim, '<strong><em>$1</em></strong>')
@@ -603,17 +596,31 @@ function formatMarkdown(text) {
 
         // Lists
         .replace(/^\s*\n\*/gim, '<ul>\n*')
-        .replace(/^ {2,}\* (.*$)/gim, (match, p1) => `<ul><li>${p1.trim()}</li></ul>`) // Nested lists
-        .replace(/^\* (.*$)/gim, (match, p1) => `<li>${p1.trim()}</li>`)
+        .replace(/^ {2,}\* (.*$)/gim, (match, p1) => `<ul class="ml-4 mt-2"><li>${p1.trim()}</li></ul>`) // Nested lists
+        .replace(/^\* (.*$)/gim, (match, content) => {
+            const lowerContent = content.toLowerCase();
+            let icon = '➡️';
+            if (lowerContent.includes('danger') || lowerContent.includes('inadmissible') || lowerContent.includes('inacceptable') || lowerContent.includes('trop lent') || lowerContent.includes('catastrophe')) {
+                icon = '🚨';
+            } else if (lowerContent.includes('excellent') || lowerContent.includes('parfait') || lowerContent.includes('bien') || lowerContent.includes('validé') || lowerContent.includes('maîtrise')) {
+                icon = '✅';
+            } else if (lowerContent.includes('conseil') || lowerContent.includes('astuce')) {
+                icon = '💡';
+            }
+            return `<li class="flex items-start gap-3 my-2"><span class="text-xl">${icon}</span><span>${content.trim()}</span></li>`;
+        })
 
         // Horizontal Rule
         .replace(/---/gim, '<hr class="my-6 border-slate-700/50">')
 
-        // Paragraphs
+        // Paragraphs and line breaks
         .replace(/\n\n/gim, '</p><p class="my-4">')
         .replace(/\n/gim, '<br>')
 
-        // Cleanup of stray tags
+        // Cleanup of stray tags to avoid creating new paragraphs after list rendering
         .replace(/<\/ul><br>/gim, '</ul>')
-        .replace(/<\/li><br>/gim, '</li>');
+        .replace(/<\/li><br>/gim, '</li>')
+        // Wrap the whole thing in a starting and ending p tag to ensure proper formatting
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>');
 }

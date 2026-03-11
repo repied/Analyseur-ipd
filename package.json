@@ -1,7 +1,7 @@
 {
   "name": "analyseur-ipd",
   "version": "1.0.0",
-  "description": "Analyseur de Plongée N4 - Garmin & Shearwater",
+  "description": "Analyseur de Plongée",
   "private": true,
   "scripts": {
     "dev": "live-server --port=5500",

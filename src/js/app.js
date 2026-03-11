@@ -3,6 +3,8 @@ const fileInput = document.getElementById('fileInput');
 const dashboard = document.getElementById('dashboard');
 const loadingMsg = document.getElementById('loadingMsg');
 const errorMsg = document.getElementById('errorMsg');
+const btnExample1 = document.getElementById('btnExample1');
+const btnExample2 = document.getElementById('btnExample2');
 
 let diveChartInstance = null;
 let lastAnalysisData = null; // Stockage global pour l'IA
@@ -27,8 +29,36 @@ function preventDefaults(e) {
 
 dropzone.addEventListener('drop', handleDrop, false);
 fileInput.addEventListener('change', (e) => handleFiles(e.target.files), false);
+btnExample1.addEventListener('click', () => loadExampleFile('assets/example1.fit'));
+btnExample2.addEventListener('click', () => loadExampleFile('assets/example2.csv'));
 
 function handleDrop(e) { handleFiles(e.dataTransfer.files); }
+
+async function loadExampleFile(url) {
+    const ext = url.split('.').pop().toLowerCase();
+
+    hideError();
+    loadingMsg.classList.remove('hidden');
+    dashboard.classList.add('hidden');
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Le fichier d'exemple n'a pas pu être chargé: ${response.statusText}`);
+        }
+
+        if (ext === 'fit') {
+            const buffer = await response.arrayBuffer();
+            parseFitFile(buffer);
+        } else if (ext === 'csv') {
+            const text = await response.text();
+            parseCSVFile(text);
+        }
+    } catch (error) {
+        showError(error.message);
+        loadingMsg.classList.add('hidden');
+    }
+}
 
 function handleFiles(files) {
     if (files.length === 0) return;
@@ -77,7 +107,7 @@ function showError(msg) {
 function hideError() { errorMsg.classList.add('hidden'); }
 
 // --- PARSER GARMIN (.FIT) ---
-function parseFitFile(buffer) {
+function parseFitFile(buffer, callback) {
     try {
         const fitParser = new window.FitParser({ force: true, lengthUnit: 'm', elapsedRecordField: true });
         const u8 = new Uint8Array(buffer);
@@ -110,14 +140,16 @@ function parseFitFile(buffer) {
             });
 
             runAnalysis(diveProfile);
+            if (callback) callback(lastAnalysisData);
         });
     } catch (err) {
+        console.error("Erreur détaillée du parser FIT:", err);
         showError("Erreur lors du chargement de la bibliothèque Garmin.");
     }
 }
 
 // --- PARSER SHEARWATER (.CSV) ---
-function parseCSVFile(text) {
+function parseCSVFile(text, callback) {
     window.Papa.parse(text, {
         header: true,
         skipEmptyLines: true,
@@ -173,6 +205,7 @@ function parseCSVFile(text) {
             diveProfile.sort((a, b) => a.x - b.x);
 
             runAnalysis(diveProfile);
+            if (callback) callback(lastAnalysisData);
         }
     });
 }
@@ -507,11 +540,7 @@ function drawChart(profileData) {
 
 // --- INTÉGRATION IA GEMINI ---
 window.getAIAnalysis = async function () {
-    const apiKey = localStorage.getItem('gemini_api_key');
-    if (!apiKey) {
-        alert("Veuillez d'abord entrer votre clé API Gemini dans le champ prévu en haut de la page.");
-        return;
-    }
+    const apiKey = "AIzaSyA3OoHCyHbY9SIIAf8ywRXfMLyeMIy1soE";
 
     if (!lastAnalysisData) {
         alert("Veuillez d'abord analyser un fichier de plongée avant de demander l'avis de l'expert.");

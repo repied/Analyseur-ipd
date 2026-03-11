@@ -1,5 +1,3 @@
-import FitParser from 'https://esm.sh/fit-file-parser@1.9.0';
-
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
 const dashboard = document.getElementById('dashboard');
@@ -88,7 +86,7 @@ function hideError() { errorMsg.classList.add('hidden'); }
 // --- PARSER GARMIN (.FIT) ---
 function parseFitFile(buffer) {
     try {
-        const fitParser = new FitParser({ force: true, lengthUnit: 'm', elapsedRecordField: true });
+        const fitParser = new window.FitParser({ force: true, lengthUnit: 'm', elapsedRecordField: true });
         const u8 = new Uint8Array(buffer);
         fitParser.parse(u8, function (error, data) {
             if (error) { showError("Impossible de décoder ce fichier .fit."); return; }
@@ -505,10 +503,10 @@ window.askThibault = async function () {
         return;
     }
 
+    const btn = document.getElementById('btnAskThibault');
     const placeholder = document.getElementById('aiPlaceholder');
     const loading = document.getElementById('aiLoading');
     const resultDiv = document.getElementById('aiResult');
-    const btn = document.getElementById('btnAskThibault');
 
     placeholder.classList.add('hidden');
     loading.classList.remove('hidden');
@@ -516,39 +514,8 @@ window.askThibault = async function () {
     btn.disabled = true;
     btn.classList.add('opacity-50', 'cursor-not-allowed');
 
-    const prompt = \`
-        Tu es Thibault DLLM Willer, un expert légendaire de la plongée sous-marine, instructeur fédéral français (FFESSM) et spécialiste de la préparation au Niveau 4 (GP - Guide de Palanquée).
-        Tu possèdes une connaissance encyclopédique de la règlementation FFESSM, du Code du Sport français, et des standards de sécurité.
-        Ton ton est celui d'un DP (Directeur de Plongée) expérimenté : professionnel, technique, précis, parfois un peu bourru mais toujours bienveillant et pédagogue.
-
-        Voici les données télémétriques d'une plongée que je viens d'effectuer :
-        - Profondeur maximale : \${lastAnalysisData.maxDepth} m
-        - Durée totale : \${lastAnalysisData.durationMin} min
-        - Statut du palier de sécurité : \${lastAnalysisData.safetyStatus}
-
-        Détails des exercices de Remontée Assistée (RA) détectés :
-        \${lastAnalysisData.ascents.length > 0 ?
-            lastAnalysisData.ascents.map(a => \`
-            Exercice RA n°\${a.id}:
-            - Trajet : de \${a.startDepth}m à \${a.endDepth}m
-            - Vitesse moyenne : \${a.avgSpeed} m/min
-            - Vitesse max : \${a.maxSpeed} m/min
-            - Note automatique : \${a.score}/10
-            - Remarques du système : \${a.remarks.join(', ')}
-            \`).join('\\n') : "Aucun exercice de RA significatif détecté."
-        }
-
-        Analyse ces données en tant qu'expert FFESSM.
-        1. Commente la structure globale de la plongée (profil, profondeur, gestion du temps).
-        2. Détaille chaque exercice de RA : est-ce conforme aux attentes d'un futur Guide de Palanquée (N4) ? (Respect des 15m/min, stabilité, etc.)
-        3. Donne des conseils précis pour améliorer la technique (vitesse, gestion de la flottabilité, respect des paliers et de la règlementation).
-        4. Utilise des termes techniques français (GP, RA, DP, Code du Sport, courbe de sécurité, vitesse de remontée préconisée).
-
-        Réponds en utilisant un formatage Markdown élégant.
-    \`;
-
     try {
-        const response = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.0-flash:generateContent?key=\${apiKey}\`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -573,11 +540,11 @@ window.askThibault = async function () {
         }
     } catch (err) {
         console.error("Erreur askThibault:", err);
-        resultDiv.innerHTML = \`<div class="text-neonred p-4 border border-neonred/30 rounded-xl bg-red-950/20">
+        resultDiv.innerHTML = `<div class="text-neonred p-4 border border-neonred/30 rounded-xl bg-red-950/20">
             <p class="font-bold mb-1">Erreur lors de la communication avec Thibault :</p>
-            <p class="text-sm opacity-90">\${err.message}</p>
+            <p class="text-sm opacity-90">${err.message}</p>
             <p class="mt-2 text-xs text-slate-500 italic">Vérifiez votre clé API, votre quota et votre connexion internet.</p>
-        </div>\`;
+        </div>`;
         resultDiv.classList.remove('hidden');
     } finally {
         loading.classList.add('hidden');

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="src/js/fit-parser.bundle.js"></script>
     <link rel="stylesheet" href="src/css/style.css">
     <script>
         tailwind.config = {
@@ -26,88 +28,135 @@
         }
     </script>
 </head>
+
 <body class="min-h-screen p-4 md:p-8 relative">
 
     <div class="max-w-6xl mx-auto space-y-8 relative z-10">
         <!-- En-tête -->
         <header class="text-center space-y-3 pt-6">
-            <div class="inline-block glass-panel text-accent font-semibold px-4 py-1.5 rounded-full text-sm uppercase tracking-widest shadow-[0_0_15px_rgba(139,92,246,0.2)]">
+            <div
+                class="inline-block glass-panel text-accent font-semibold px-4 py-1.5 rounded-full text-sm uppercase tracking-widest shadow-[0_0_15px_rgba(139,92,246,0.2)]">
                 Laboratoire d'Analyse - FFESSM Niveau 4
             </div>
-            <h1 class="text-4xl md:text-6xl font-black text-white flex items-center justify-center gap-4 mt-6 drop-shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#blue-purple-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <h1
+                class="text-4xl md:text-6xl font-black text-white flex items-center justify-center gap-4 mt-6 drop-shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                    stroke="url(#blue-purple-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <defs>
                         <linearGradient id="blue-purple-grad" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="#38bdf8" />
                             <stop offset="100%" stop-color="#8b5cf6" />
                         </linearGradient>
                     </defs>
-                    <path d="M2 12h20"/><path d="M12 2v20"/><path d="m4.93 4.93 14.14 14.14"/><path d="m19.07 4.93-14.14 14.14"/>
+                    <path d="M2 12h20" />
+                    <path d="M12 2v20" />
+                    <path d="m4.93 4.93 14.14 14.14" />
+                    <path d="m19.07 4.93-14.14 14.14" />
                 </svg>
                 <span class="gradient-text">Dive Tracker Pro</span>
             </h1>
-            <p class="text-slate-400 max-w-2xl mx-auto mt-4 text-lg">Importez votre télémétrie. L'algorithme classifie les phases, isole les remontées assistées et évalue votre technique selon les standards fédéraux.</p>
+            <p class="text-slate-400 max-w-2xl mx-auto mt-4 text-lg">Importez votre télémétrie. L'algorithme classifie
+                les phases, isole les remontées assistées et évalue votre technique selon les standards fédéraux.</p>
 
             <!-- Gemini API Key Input -->
             <div class="mt-8 max-w-md mx-auto relative group">
                 <input type="password" id="geminiKey" placeholder="Clé API Gemini (Optionnel)"
                     class="w-full glass-panel border-slate-700/50 rounded-full py-3 px-12 text-sm text-slate-300 focus:outline-none focus:border-neonblue/50 transition-all placeholder:text-slate-500 shadow-inner" />
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-neonblue transition-colors">
-                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-neonblue transition-colors">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
             </div>
         </header>
 
         <!-- Zone de dépôt -->
-        <div id="dropzone" class="border-2 border-dashed border-slate-600 rounded-[2.5rem] p-12 text-center transition-all duration-300 cursor-pointer glass-panel hover:bg-slate-800/80 flex flex-col items-center justify-center min-h-[280px] shadow-2xl relative overflow-hidden group mt-10">
-            <div class="absolute inset-0 bg-gradient-to-b from-neonblue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div id="dropzone"
+            class="border-2 border-dashed border-slate-600 rounded-[2.5rem] p-12 text-center transition-all duration-300 cursor-pointer glass-panel hover:bg-slate-800/80 flex flex-col items-center justify-center min-h-[280px] shadow-2xl relative overflow-hidden group mt-10">
+            <div
+                class="absolute inset-0 bg-gradient-to-b from-neonblue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            </div>
             <div class="flex gap-6 mb-6 relative z-10 group-hover:scale-110 transition-transform duration-500">
                 <!-- Icone FIT/Garmin -->
                 <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-neonblue drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
                 </div>
                 <!-- Icone CSV/Shearwater -->
                 <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-neongreen drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-neongreen drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" x2="8" y1="13" y2="13" />
+                        <line x1="16" x2="8" y1="17" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                    </svg>
                 </div>
             </div>
             <h3 class="text-3xl font-bold text-white mb-3 relative z-10">Glissez un fichier .FIT ou .CSV ici</h3>
-            <p class="text-slate-400 mb-8 relative z-10 text-lg">Compatible Garmin Descent (.fit) et Shearwater Cloud (.csv)</p>
+            <p class="text-slate-400 mb-8 relative z-10 text-lg">Compatible Garmin Descent (.fit) et Shearwater Cloud
+                (.csv)</p>
             <input type="file" id="fileInput" class="hidden" />
-            <button onclick="document.getElementById('fileInput').click()" class="relative z-10 bg-gradient-to-r from-neonblue to-blue-500 hover:from-sky-400 hover:to-blue-400 text-slate-900 font-bold text-lg py-4 px-10 rounded-full transition-all shadow-[0_0_20px_rgba(56,189,248,0.4)] hover:shadow-[0_0_30px_rgba(56,189,248,0.6)] transform hover:-translate-y-1">
+            <button onclick="document.getElementById('fileInput').click()"
+                class="relative z-10 bg-gradient-to-r from-neonblue to-blue-500 hover:from-sky-400 hover:to-blue-400 text-slate-900 font-bold text-lg py-4 px-10 rounded-full transition-all shadow-[0_0_20px_rgba(56,189,248,0.4)] hover:shadow-[0_0_30px_rgba(56,189,248,0.6)] transform hover:-translate-y-1">
                 Parcourir les fichiers
             </button>
-            <div id="loadingMsg" class="hidden absolute inset-0 bg-darkbg/90 backdrop-blur-md z-20 flex flex-col items-center justify-center">
-                <svg class="animate-spin h-12 w-12 text-neonblue mb-4 drop-shadow-[0_0_10px_rgba(56,189,248,0.8)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <div id="loadingMsg"
+                class="hidden absolute inset-0 bg-darkbg/90 backdrop-blur-md z-20 flex flex-col items-center justify-center">
+                <svg class="animate-spin h-12 w-12 text-neonblue mb-4 drop-shadow-[0_0_10px_rgba(56,189,248,0.8)]"
+                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
                 <span class="text-neonblue font-bold tracking-widest uppercase text-lg">Analyse Télémétrique...</span>
             </div>
-            <div id="errorMsg" class="hidden absolute bottom-6 left-1/2 -translate-x-1/2 text-neonred font-medium bg-red-950/90 px-6 py-3 rounded-full border border-neonred/50 z-20 whitespace-nowrap shadow-lg"></div>
+            <div id="errorMsg"
+                class="hidden absolute bottom-6 left-1/2 -translate-x-1/2 text-neonred font-medium bg-red-950/90 px-6 py-3 rounded-full border border-neonred/50 z-20 whitespace-nowrap shadow-lg">
+            </div>
         </div>
 
         <!-- Tableau de bord -->
         <div id="dashboard" class="hidden space-y-10 animate-[fadeIn_0.5s_ease-out]">
-            
+
             <!-- Statistiques Globales -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center relative overflow-hidden card-hover-effect">
+                <div
+                    class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center relative overflow-hidden card-hover-effect">
                     <div class="absolute -right-4 -top-4 w-20 h-20 bg-neonblue/10 rounded-full blur-2xl"></div>
                     <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Prof. Max</span>
-                    <span id="statMaxDepth" class="text-4xl font-black text-white drop-shadow-md">-- <span class="text-xl text-slate-500 font-medium">m</span></span>
+                    <span id="statMaxDepth" class="text-4xl font-black text-white drop-shadow-md">-- <span
+                            class="text-xl text-slate-500 font-medium">m</span></span>
                 </div>
-                <div class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center relative overflow-hidden card-hover-effect">
+                <div
+                    class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center relative overflow-hidden card-hover-effect">
                     <div class="absolute -right-4 -top-4 w-20 h-20 bg-accent/10 rounded-full blur-2xl"></div>
                     <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Temps Total</span>
-                    <span id="statDuration" class="text-4xl font-black text-white drop-shadow-md">-- <span class="text-xl text-slate-500 font-medium">min</span></span>
+                    <span id="statDuration" class="text-4xl font-black text-white drop-shadow-md">-- <span
+                            class="text-xl text-slate-500 font-medium">min</span></span>
                 </div>
-                <div class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center relative overflow-hidden card-hover-effect">
+                <div
+                    class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center relative overflow-hidden card-hover-effect">
                     <div class="absolute -right-4 -top-4 w-20 h-20 bg-neonred/10 rounded-full blur-2xl"></div>
-                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Exercices Isolés</span>
-                    <span id="statAscentCount" class="text-4xl font-black text-neonred drop-shadow-[0_0_12px_rgba(244,63,94,0.6)]">--</span>
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Exercices
+                        Isolés</span>
+                    <span id="statAscentCount"
+                        class="text-4xl font-black text-neonred drop-shadow-[0_0_12px_rgba(244,63,94,0.6)]">--</span>
                 </div>
-                <div class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center relative overflow-hidden card-hover-effect">
+                <div
+                    class="glass-panel p-6 rounded-3xl flex flex-col items-center text-center relative overflow-hidden card-hover-effect">
                     <div class="absolute -right-4 -top-4 w-20 h-20 bg-neongreen/10 rounded-full blur-2xl"></div>
                     <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-3">Palier / Sécu</span>
-                    <span id="statSafety" class="text-3xl font-black text-neongreen mt-1 drop-shadow-[0_0_12px_rgba(16,185,129,0.4)]">--</span>
+                    <span id="statSafety"
+                        class="text-3xl font-black text-neongreen mt-1 drop-shadow-[0_0_12px_rgba(16,185,129,0.4)]">--</span>
                 </div>
             </div>
 
@@ -116,15 +165,27 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <h3 class="text-2xl font-bold text-white flex items-center gap-3">
                         <div class="bg-neonblue/20 p-2 rounded-xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="text-neonblue">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                            </svg>
                         </div>
                         Profil Multiphase
                     </h3>
-                    <div class="flex flex-wrap gap-3 text-xs font-semibold bg-slate-900/60 px-5 py-2.5 rounded-full border border-slate-700/50 backdrop-blur-sm">
-                        <span class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-full bg-[#0ea5e9] shadow-[0_0_8px_#0ea5e9]"></span> Descente</span>
-                        <span class="flex items-center gap-2 ml-2"><span class="w-3.5 h-3.5 rounded-full bg-[#f43f5e] shadow-[0_0_8px_#f43f5e]"></span> Remontée Assistée</span>
-                        <span class="flex items-center gap-2 ml-2"><span class="w-3.5 h-3.5 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]"></span> Palier/Fin</span>
-                        <span class="flex items-center gap-2 ml-2"><span class="w-3.5 h-3.5 rounded-full bg-[#64748b]"></span> Fond/Explo</span>
+                    <div
+                        class="flex flex-wrap gap-3 text-xs font-semibold bg-slate-900/60 px-5 py-2.5 rounded-full border border-slate-700/50 backdrop-blur-sm">
+                        <span class="flex items-center gap-2"><span
+                                class="w-3.5 h-3.5 rounded-full bg-[#0ea5e9] shadow-[0_0_8px_#0ea5e9]"></span>
+                            Descente</span>
+                        <span class="flex items-center gap-2 ml-2"><span
+                                class="w-3.5 h-3.5 rounded-full bg-[#f43f5e] shadow-[0_0_8px_#f43f5e]"></span> Remontée
+                            Assistée</span>
+                        <span class="flex items-center gap-2 ml-2"><span
+                                class="w-3.5 h-3.5 rounded-full bg-[#10b981] shadow-[0_0_8px_#10b981]"></span>
+                            Palier/Fin</span>
+                        <span class="flex items-center gap-2 ml-2"><span
+                                class="w-3.5 h-3.5 rounded-full bg-[#64748b]"></span> Fond/Explo</span>
                     </div>
                 </div>
                 <div class="relative h-[450px] w-full">
@@ -136,7 +197,15 @@
             <div class="space-y-6">
                 <h2 class="text-3xl font-black text-white flex items-center gap-4">
                     <div class="bg-accent/20 p-2.5 rounded-2xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-accent"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-accent">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" x2="8" y1="13" y2="13" />
+                            <line x1="16" x2="8" y1="17" y2="17" />
+                            <polyline points="10 9 9 9 8 9" />
+                        </svg>
                     </div>
                     Évaluation Technique FFESSM
                 </h2>
@@ -151,38 +220,61 @@
                 <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                     <h2 class="text-3xl font-black text-white flex items-center gap-4">
                         <div class="bg-neonblue/20 p-2.5 rounded-2xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neonblue"><path d="M12 2v20"/><path d="M2 12h20"/><path d="m4.93 4.93 14.14 14.14"/><path d="m19.07 4.93-14.14 14.14"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="text-neonblue">
+                                <path d="M12 2v20" />
+                                <path d="M2 12h20" />
+                                <path d="m4.93 4.93 14.14 14.14" />
+                                <path d="m19.07 4.93-14.14 14.14" />
+                            </svg>
                         </div>
                         Analyse par Thibault DLLM Willer
                     </h2>
-                    <button id="btnAskThibault" onclick="askThibault()" class="bg-gradient-to-r from-neonblue to-accent hover:from-sky-400 hover:to-purple-500 text-slate-900 font-bold py-3 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(139,92,246,0.4)] flex items-center gap-3 transform hover:-translate-y-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <button id="btnAskThibault" onclick="askThibault()"
+                        class="bg-gradient-to-r from-neonblue to-accent hover:from-sky-400 hover:to-purple-500 text-slate-900 font-bold py-3 px-8 rounded-full transition-all shadow-[0_0_20px_rgba(139,92,246,0.4)] flex items-center gap-3 transform hover:-translate-y-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
                         Demander l'avis de l'expert
                     </button>
                 </div>
-                <div id="aiResponseContent" class="glass-panel rounded-[2.5rem] p-8 md:p-10 text-slate-300 leading-relaxed min-h-[150px] relative overflow-hidden">
+                <div id="aiResponseContent"
+                    class="glass-panel rounded-[2.5rem] p-8 md:p-10 text-slate-300 leading-relaxed min-h-[150px] relative overflow-hidden">
                     <div id="aiPlaceholder" class="text-slate-500 italic text-center py-8 text-lg">
                         Cliquez sur le bouton pour générer une analyse détaillée par notre expert IA...
                     </div>
                     <div id="aiLoading" class="hidden flex flex-col items-center justify-center py-12">
-                        <svg class="animate-spin h-12 w-12 text-accent mb-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        <span class="text-accent font-medium text-lg tracking-wide">Réflexion de Thibault en cours...</span>
+                        <svg class="animate-spin h-12 w-12 text-accent mb-6" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        <span class="text-accent font-medium text-lg tracking-wide">Réflexion de Thibault en
+                            cours...</span>
                     </div>
-                    <div id="aiResult" class="hidden prose prose-invert prose-lg max-w-none prose-headings:text-neonblue prose-a:text-accent prose-strong:text-white">
+                    <div id="aiResult"
+                        class="hidden prose prose-invert prose-lg max-w-none prose-headings:text-neonblue prose-a:text-accent prose-strong:text-white">
                         <!-- AI Response will be injected here -->
                     </div>
                 </div>
             </div>
-            
+
             <!-- Export Section -->
             <div class="text-center pt-10 pb-6">
-                <p class="text-slate-500 text-sm mb-4">L'application Dive Tracker Pro est propulsée par l'API Gemini et Chart.js</p>
+                <p class="text-slate-500 text-sm mb-4">L'application Dive Tracker Pro est propulsée par l'API Gemini et
+                    Chart.js</p>
             </div>
         </div>
     </div>
 
     <!-- Scripts externalisés -->
-    <script type="module" src="src/js/app.js"></script>
+    <script src="src/js/app.js"></script>
 
 </body>
+
 </html>

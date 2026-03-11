@@ -208,7 +208,7 @@ function runAnalysis(diveProfile) {
         diveProfile[i].speed = calculateSpeed(diveProfile, i, 5);
     }
 
-    // Détection des Phases et Exercices
+    // Détection des Phases et Exercices (premier passage)
     let ascents = [];
     let currentAscent = null;
     let timeAtSafetyStop = 0;
@@ -217,66 +217,98 @@ function runAnalysis(diveProfile) {
         let p = diveProfile[i];
         let prevP = i > 0 ? diveProfile[i - 1] : p;
 
-        // 1. Descentes
         if (p.speed > 3) p.phase = 'descent';
 
-        // 2. Paliers (2m à 6m, vitesse très faible)
         if (p.y >= 2 && p.y <= 6 && Math.abs(p.speed) < 2) {
             p.phase = 'stop';
             timeAtSafetyStop += (p.x - prevP.x);
         }
 
-        // 3. Remontées Assistées - AMÉLIORATION DE LA DÉTECTION
-        // Ascent threshold: normally > -2 m/min to start an ascent
         if (p.speed <= -2.0) {
-            p.phase = 'ascent';
-
             if (!currentAscent) {
-                currentAscent = { startIndex: i, startPoint: p, points: [], speeds: [], drops: 0, stops: 0, pauseTimer: 0 };
+                currentAscent = { points: [], speeds: [] };
             }
             currentAscent.points.push(p);
             currentAscent.speeds.push(Math.abs(p.speed));
-            currentAscent.pauseTimer = 0; // reset pause
+            currentAscent.pauseTimer = 0;
         } else if (currentAscent) {
-            // It's pausing or dropping
-            if (p.speed > -2.0) {
-                // Tolerate up to 30 seconds of pause/drop without ending the ascent
-                let dt = p.x - prevP.x;
-                currentAscent.pauseTimer += dt;
-
-                if (currentAscent.pauseTimer > 0.5) { // more than 30s
-                    // END ASCENT
-                    currentAscent.endIndex = i;
-                    currentAscent.endPoint = p;
-                    let amplitude = currentAscent.startPoint.y - currentAscent.endPoint.y;
-                    if (amplitude >= 8) {
-                        ascents.push(currentAscent);
-                        for (let j = currentAscent.startIndex; j <= currentAscent.endIndex; j++) diveProfile[j].phase = 'ascent';
-                    } else {
-                        // Cancel ascent, revert phase
-                        for (let j = currentAscent.startIndex; j <= i; j++) if (diveProfile[j].phase === 'ascent') diveProfile[j].phase = 'bottom';
-                    }
-                    currentAscent = null;
-                } else {
-                    // still inside the ascent event
-                    currentAscent.points.push(p);
-                    currentAscent.speeds.push(Math.abs(p.speed));
-                    p.phase = 'ascent';
-                }
+            let dt = p.x - prevP.x;
+            currentAscent.pauseTimer += dt;
+            if (currentAscent.pauseTimer > 0.5) {
+                ascents.push(currentAscent);
+                currentAscent = null;
+            } else {
+                currentAscent.points.push(p);
+                currentAscent.speeds.push(Math.abs(p.speed));
             }
         }
     }
 
     if (currentAscent) {
-        currentAscent.endPoint = diveProfile[diveProfile.length - 1];
-        if (currentAscent.startPoint.y - currentAscent.endPoint.y >= 8) ascents.push(currentAscent);
+        ascents.push(currentAscent);
     }
 
-    // Notation FFESSM
-    ascents.forEach(asc => {
+    // --- AFFINAGE DES REMONTÉES DÉTECTÉES ---
+    diveProfile.forEach(p => { if (p.phase === 'ascent') p.phase = 'bottom'; });
+
+    const finalAscents = ascents.map(asc => {
+        if (asc.points.length < 2) return null;
+
+        // 1. Find the absolute max depth in this potential ascent segment.
+        let maxDepthInSegment = -1;
+        asc.points.forEach(p => {
+            if (p.y > maxDepthInSegment) {
+                maxDepthInSegment = p.y;
+            }
+        });
+
+        // 2. Find the LAST point in the segment that is at this max depth.
+        // This marks the true beginning of the ascent, after any bottom time.
+        let lastMaxDepthIndex = -1;
+        for (let i = asc.points.length - 1; i >= 0; i--) {
+            // Use a small tolerance to account for minor depth fluctuations at the bottom.
+            if (Math.abs(asc.points[i].y - maxDepthInSegment) < 0.5) {
+                lastMaxDepthIndex = i;
+                break;
+            }
+        }
+
+        if (lastMaxDepthIndex === -1) {
+            lastMaxDepthIndex = 0; // Fallback, should not happen often.
+        }
+
+        // 3. Find the highest point (minimum depth) AFTER the ascent has started.
+        let minDepth = maxDepthInSegment;
+        let minDepthIndex = lastMaxDepthIndex;
+        for (let i = lastMaxDepthIndex; i < asc.points.length; i++) {
+            if (asc.points[i].y <= minDepth) {
+                minDepth = asc.points[i].y;
+                minDepthIndex = i;
+            }
+        }
+
+        const trimmedPoints = asc.points.slice(lastMaxDepthIndex, minDepthIndex + 1);
+        if (trimmedPoints.length < 2) return null;
+
+        const startPoint = trimmedPoints[0];
+        const endPoint = trimmedPoints[trimmedPoints.length - 1];
+        if (startPoint.y - endPoint.y < 8) return null;
+
+        trimmedPoints.forEach(p => p.phase = 'ascent');
+
+        return {
+            points: trimmedPoints,
+            speeds: asc.speeds.slice(lastMaxDepthIndex, minDepthIndex + 1),
+            startPoint,
+            endPoint
+        };
+    }).filter(Boolean);
+
+    // --- NOTATION FFESSM & MISE À JOUR UI ---
+    finalAscents.forEach(asc => {
         let amplitude = asc.startPoint.y - asc.endPoint.y;
         let duration = asc.endPoint.x - asc.startPoint.x;
-        asc.avgSpeed = amplitude / duration;
+        asc.avgSpeed = duration > 0 ? amplitude / duration : 0;
         asc.maxSpeed = Math.max(...asc.speeds);
 
         let mean = asc.avgSpeed;
@@ -285,17 +317,13 @@ function runAnalysis(diveProfile) {
 
         asc.dropsDetected = 0;
         asc.stopsDuration = 0;
-
         for (let k = 1; k < asc.points.length; k++) {
-            let diffY = asc.points[k].y - asc.points[k - 1].y;
-            let diffX = asc.points[k].x - asc.points[k - 1].x;
-            if (diffY > 0.3) asc.dropsDetected++;
-            if (Math.abs(asc.points[k].speed) < 1.5) asc.stopsDuration += diffX;
+            if (asc.points[k].y - asc.points[k - 1].y > 0.3) asc.dropsDetected++;
+            if (Math.abs(asc.points[k].speed) < 1.5) asc.stopsDuration += (asc.points[k].x - asc.points[k - 1].x);
         }
 
         let score = 10;
         let remarks = [];
-
         if (asc.avgSpeed < 9) { score -= 2; remarks.push("Trop lent (moy < 10m/min)"); }
         else if (asc.avgSpeed > 16) { score -= 3; remarks.push("Trop rapide (moy > 15m/min)"); }
         else { remarks.push("Excellente vitesse moyenne"); }
@@ -314,27 +342,23 @@ function runAnalysis(diveProfile) {
         asc.remarks = remarks;
     });
 
-    // Mise à jour de l'UI
     document.getElementById('statMaxDepth').innerHTML = `${maxDepth.toFixed(1)} <span class="text-lg text-slate-500 font-medium">m</span>`;
     document.getElementById('statDuration').innerHTML = `${Math.floor(durationMin)} <span class="text-lg text-slate-500 font-medium">min</span>`;
-    document.getElementById('statAscentCount').textContent = ascents.length;
+    document.getElementById('statAscentCount').textContent = finalAscents.length;
 
     let safetyText = timeAtSafetyStop > 2 ? "Validé" : (timeAtSafetyStop > 0.5 ? "Tronqué" : "Absent");
     document.getElementById('statSafety').textContent = safetyText;
-    if (safetyText === "Validé") document.getElementById('statSafety').className = "text-2xl font-black text-neongreen mt-1";
-    else if (safetyText === "Tronqué") document.getElementById('statSafety').className = "text-2xl font-black text-orange-400 mt-1";
-    else document.getElementById('statSafety').className = "text-2xl font-black text-slate-500 mt-1";
+    document.getElementById('statSafety').className = `text-2xl font-black mt-1 ${safetyText === "Validé" ? "text-neongreen" : safetyText === "Tronqué" ? "text-orange-400" : "text-slate-500"}`;
 
     loadingMsg.classList.add('hidden');
-    renderAscentCards(ascents);
+    renderAscentCards(finalAscents);
     drawChart(diveProfile);
 
-    // Préparation des données pour l'IA
     lastAnalysisData = {
         maxDepth: maxDepth.toFixed(1),
         durationMin: Math.floor(durationMin),
         safetyStatus: safetyText,
-        ascents: ascents.map((a, i) => ({
+        ascents: finalAscents.map((a, i) => ({
             id: i + 1,
             startDepth: a.startPoint.y.toFixed(1),
             endDepth: a.endPoint.y.toFixed(1),
@@ -345,12 +369,10 @@ function runAnalysis(diveProfile) {
         }))
     };
 
-    // Afficher la section IA
     document.getElementById('aiAnalysisSection').classList.remove('hidden');
     document.getElementById('aiPlaceholder').classList.remove('hidden');
     document.getElementById('aiLoading').classList.add('hidden');
     document.getElementById('aiResult').classList.add('hidden');
-
     dashboard.classList.remove('hidden');
 }
 

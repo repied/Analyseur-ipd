@@ -590,11 +590,30 @@ window.askThibault = async function () {
 
 function formatMarkdown(text) {
     return text
-        .replace(/^### (.*$)/gim, '<h4 class="text-xl font-bold text-white mt-6 mb-3">$1</h4>')
-        .replace(/^## (.*$)/gim, '<h3 class="text-2xl font-bold text-neonblue mt-8 mb-4">$1</h3>')
-        .replace(/^# (.*$)/gim, '<h2 class="text-3xl font-black text-accent mt-10 mb-6">$1</h2>')
-        .replace(/\\*\\*(.*)\\*\\*/gim, '<strong class="text-white font-bold">$1</strong>')
-        .replace(/\\*(.*)\\*/gim, '<em class="italic text-slate-400">$1</em>')
-        .replace(/^\\- (.*$)/gim, '<li class="ml-4 list-disc mb-1">$1</li>')
-        .replace(/\\n/gim, '<br>');
+        // Headings
+        .replace(/^#### (.*$)/gim, '<h4 class="text-lg font-semibold text-white mt-4 mb-2">$1</h4>')
+        .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold text-neonblue mt-6 mb-3">$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold text-accent mt-8 mb-4 border-b-2 border-accent/30 pb-2">$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-black text-white mt-10 mb-6 border-b-4 border-neonblue/50 pb-3">$1</h1>')
+
+        // Bold and Italics
+        .replace(/\*\*\*(.*?)\*\*\*/gim, '<strong><em>$1</em></strong>')
+        .replace(/\*\*(.*?)\*\*/gim, '<strong class="text-white font-semibold">$1</strong>')
+        .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+
+        // Lists
+        .replace(/^\s*\n\*/gim, '<ul>\n*')
+        .replace(/^ {2,}\* (.*$)/gim, (match, p1) => `<ul><li>${p1.trim()}</li></ul>`) // Nested lists
+        .replace(/^\* (.*$)/gim, (match, p1) => `<li>${p1.trim()}</li>`)
+
+        // Horizontal Rule
+        .replace(/---/gim, '<hr class="my-6 border-slate-700/50">')
+
+        // Paragraphs
+        .replace(/\n\n/gim, '</p><p class="my-4">')
+        .replace(/\n/gim, '<br>')
+
+        // Cleanup of stray tags
+        .replace(/<\/ul><br>/gim, '</ul>')
+        .replace(/<\/li><br>/gim, '</li>');
 }

@@ -9,6 +9,10 @@ const btnExample2 = document.getElementById('btnExample2');
 let diveChartInstance = null;
 let lastAnalysisData = null; // Stockage global pour l'IA
 
+// --- CONFIGURATION SÉCURISÉE ---
+const PROXY_URL = "https://script.google.com/macros/s/AKfycbxmp8XXsIDD_s37wF281J9xWD8bh9fFEm0Whux4zhg-vtmhMkNEXFuhzjGgSUyC5lyE/exec";
+
+
 // Drag and drop events
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropzone.addEventListener(eventName, preventDefaults, false);
@@ -605,16 +609,9 @@ window.getAIAnalysis = async function () {
     `;
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch(PROXY_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }]
-            })
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
 
         if (!response.ok) {

@@ -719,13 +719,13 @@ class ShearwaterBLE {
         this.log = logCallback || console.log;
         this.log("Connexion GATT...");
         this.server = await this.device.gatt.connect();
-        
+
         this.log("Découverte des services...");
         const service = await this.server.getPrimaryService('6e400001-b5a3-f393-e0a9-e50e24dcca9e');
-        
+
         this.rx = await service.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e'); // Write
         this.tx = await service.getCharacteristic('6e400003-b5a3-f393-e0a9-e50e24dcca9e'); // Notify
-        
+
         this.tx.addEventListener('characteristicvaluechanged', this.handleNotifications.bind(this));
         await this.tx.startNotifications();
         this.log("Bluetooth prêt !");
@@ -762,7 +762,7 @@ class ShearwaterBLE {
             }
         }
         this.rxBuffer = [];
-        
+
         if (decoded.length >= 4 && decoded[0] === 0x01 && decoded[1] === 0xFF) {
             let length = decoded[2];
             let payload = decoded.slice(4, 4 + length - 1);
@@ -775,9 +775,9 @@ class ShearwaterBLE {
     async transfer(commandBytes, timeoutMs = 5000) {
         return new Promise(async (resolve, reject) => {
             this.resolvers.push(resolve);
-            
+
             let packet = [0xFF, 0x01, commandBytes.length + 1, 0x00, ...commandBytes];
-            
+
             let slipEncoded = [];
             for (let c of packet) {
                 if (c === END) slipEncoded.push(ESC, ESC_END);
@@ -785,11 +785,11 @@ class ShearwaterBLE {
                 else slipEncoded.push(c);
             }
             slipEncoded.push(END);
-            
+
             const CHUNK_SIZE = 32;
             const payloadSize = CHUNK_SIZE - 2;
             const nframes = Math.ceil(slipEncoded.length / payloadSize);
-            
+
             for (let i = 0; i < nframes; i++) {
                 let chunk = new Uint8Array(Math.min(CHUNK_SIZE, slipEncoded.length - i * payloadSize + 2));
                 chunk[0] = nframes;
@@ -797,7 +797,7 @@ class ShearwaterBLE {
                 chunk.set(slipEncoded.slice(i * payloadSize, (i + 1) * payloadSize), 2);
                 await this.rx.writeValue(chunk);
             }
-            
+
             setTimeout(() => {
                 const index = this.resolvers.indexOf(resolve);
                 if (index > -1) {
@@ -810,23 +810,23 @@ class ShearwaterBLE {
 
     async downloadBlock(address, size, compress = 1) {
         this.log(`Requête du bloc mémoire ${address.toString(16)} (${size} octets)`);
-        let req_init = [0x35, compress ? 0x10 : 0x00, 0x34, 
+        let req_init = [0x35, compress ? 0x10 : 0x00, 0x34,
             (address >> 24) & 0xFF, (address >> 16) & 0xFF, (address >> 8) & 0xFF, address & 0xFF,
             (size >> 16) & 0xFF, (size >> 8) & 0xFF, size & 0xFF];
-            
+
         let res_init = await this.transfer(req_init);
         if (res_init[0] !== 0x75 || res_init[1] !== 0x10) throw new Error("Init download échoué");
-        
+
         let done = false;
         let block = 1;
         let nbytes = 0;
         let dynamicBuffer = [];
-        
+
         while (nbytes < size && !done) {
             let req_block = [0x36, block];
             let res_block = await this.transfer(req_block, 20000); // 20s timeout for blocks
             if (res_block[0] !== 0x76 || res_block[1] !== block) throw new Error("Erreur de bloc " + block);
-            
+
             let payload = res_block.slice(2);
             if (compress) {
                 let res = this.decompressLRE(payload);
@@ -838,7 +838,7 @@ class ShearwaterBLE {
             nbytes += payload.length;
             block++;
         }
-        
+
         await this.transfer([0x37]); // Quit
         let result = new Uint8Array(dynamicBuffer);
         if (compress) this.decompressXOR(result);
@@ -853,17 +853,17 @@ class ShearwaterBLE {
         while (offset + 9 <= nbits) {
             let byte = Math.floor(offset / 8);
             let bit = offset % 8;
-            let val16 = (data[byte] << 8) | (data[byte+1] || 0);
+            let val16 = (data[byte] << 8) | (data[byte + 1] || 0);
             let shift = 16 - (bit + 9);
             let value = (val16 >> shift) & 0x1FF;
-            
+
             if (value & 0x100) {
                 buffer.push(value & 0xFF);
             } else if (value === 0) {
                 done = true;
                 break;
             } else {
-                for(let i=0; i<value; i++) buffer.push(0);
+                for (let i = 0; i < value; i++) buffer.push(0);
             }
             offset += 9;
         }
@@ -896,7 +896,7 @@ async function connectShearwater() {
         });
 
         const shearwater = new ShearwaterBLE(device);
-        
+
         device.addEventListener('gattserverdisconnected', () => {
             console.log("Appareil déconnecté.");
         });
@@ -908,43 +908,43 @@ async function connectShearwater() {
         const manifestSize = 0x600;
         const manifestAddr = 0xE0000000;
         const manifest = await shearwater.downloadBlock(manifestAddr, manifestSize, 0);
-        
+
         // Trouver la dernière plongée valide
         let latestAddress = 0;
         for (let i = 0; i < manifest.length; i += 32) {
-            let magic = (manifest[i] << 8) | manifest[i+1];
+            let magic = (manifest[i] << 8) | manifest[i + 1];
             if (magic !== 0x5A23) { // Non supprimé
-                latestAddress = (manifest[i+20] << 24) | (manifest[i+21] << 16) | (manifest[i+22] << 8) | manifest[i+23];
+                latestAddress = (manifest[i + 20] << 24) | (manifest[i + 21] << 16) | (manifest[i + 22] << 8) | manifest[i + 23];
             }
         }
-        
+
         if (latestAddress === 0) throw new Error("Aucune plongée trouvée.");
 
         statusSpan.textContent = "Téléchargement de la dernière plongée...";
         const diveData = await shearwater.downloadBlock(0xC0000000 + latestAddress, 0xFFFFFF, 1);
-        
+
         statusSpan.textContent = "Analyse de la plongée...";
-        
+
         // Parsing simplifié de Shearwater Petrel/Predator
         const diveProfile = [];
         let timeSec = 0;
         let interval = 10;
-        
+
         // Saut d'entête (Headersize approx 36/60)
         let offset = 60; // heuristique standard
         const sampleSize = 12; // PNF/Petrel 
-        
+
         while (offset + sampleSize <= diveData.length) {
             let empty = true;
-            for(let k=0; k<sampleSize; k++) if(diveData[offset+k] !== 0) { empty = false; break; }
+            for (let k = 0; k < sampleSize; k++) if (diveData[offset + k] !== 0) { empty = false; break; }
             if (empty) { offset += sampleSize; continue; }
-            
+
             let type = diveData[offset]; // PNF record type
             if (type === 0x05) { // 0x05 = LOG_RECORD_DIVE_SAMPLE
                 timeSec += interval;
-                let depth16 = (diveData[offset+1] << 8) | diveData[offset+2];
+                let depth16 = (diveData[offset + 1] << 8) | diveData[offset + 2];
                 let depth = depth16 / 10.0;
-                
+
                 diveProfile.push({
                     x: timeSec / 60.0,
                     y: Math.max(0, depth),
@@ -960,7 +960,7 @@ async function connectShearwater() {
         }
 
         runAnalysis(diveProfile);
-        
+
     } catch (error) {
         console.error("Erreur Bluetooth:", error);
         showError("Erreur Bluetooth: " + error.message);
@@ -987,15 +987,15 @@ class GarminGFDIBLE {
 
         // Les montres Garmin récentes utilisent le service ML_GFDI (Message Layer GFDI)
         const ML_GFDI = '6a4e2800-667b-11e3-949a-0800200c9a66';
-        const RX_CHAR = '6a4ecd28-667b-11e3-949a-0800200c9a66'; 
+        const RX_CHAR = '6a4ecd28-667b-11e3-949a-0800200c9a66';
         const TX_CHAR = '6a4e4c80-667b-11e3-949a-0800200c9a66';
 
         this.log("Bind Service GFDI propriétaire...");
         const service = await this.server.getPrimaryService(ML_GFDI).catch(async () => {
-             // Fallback pour les anciens modèles (ex: Fenix 3, Descent Mk1 v1)
-             return await this.server.getPrimaryService('9b012401-bc30-ce9a-e111-0f67e491abde');
+            // Fallback pour les anciens modèles (ex: Fenix 3, Descent Mk1 v1)
+            return await this.server.getPrimaryService('9b012401-bc30-ce9a-e111-0f67e491abde');
         });
-        
+
         const characteristics = await service.getCharacteristics();
         this.rx = characteristics.find(c => c.uuid.includes('cd28') || c.uuid.includes('4acbcd28'));
         this.tx = characteristics.find(c => c.uuid.includes('4c80') || c.uuid.includes('df334c80'));
@@ -1063,32 +1063,32 @@ class GarminGFDIBLE {
     async transferGFDI(messageType, payload, timeoutMs = 10000) {
         return new Promise(async (resolve, reject) => {
             this.resolvers.push({ type: messageType, resolve });
-            
+
             // Format GFDI: [Length LSB] [Type LSB] [Payload] [CRC16 LSB]
-            let packetLength = 4 + payload.length + 2; 
+            let packetLength = 4 + payload.length + 2;
             let packet = new Uint8Array(packetLength);
-            
+
             packet[0] = packetLength & 0xFF;
             packet[1] = (packetLength >> 8) & 0xFF;
             packet[2] = messageType & 0xFF;
             packet[3] = (messageType >> 8) & 0xFF;
             packet.set(payload, 4);
-            
+
             // Simplification: le CRC16 CCITT de Garmin est calculé ici. En mode hack, on envoie 0x0000 
             // La montre accepte parfois ou rejette selon le firmware.
             packet[packetLength - 2] = 0x00;
-            packet[packetLength - 1] = 0x00; 
+            packet[packetLength - 1] = 0x00;
 
             let encoded = this.cobsEncode(packet);
             let finalFrame = new Uint8Array(encoded.length + 1);
             finalFrame.set(encoded, 0);
             finalFrame[encoded.length] = 0x00; // COBS delimiter
-            
+
             const CHUNK_SIZE = 20; // MTU standard BLE (23 - 3)
             for (let i = 0; i < finalFrame.length; i += CHUNK_SIZE) {
                 await this.tx.writeValue(finalFrame.slice(i, i + CHUNK_SIZE));
             }
-            
+
             setTimeout(() => {
                 const index = this.resolvers.findIndex(r => r.resolve === resolve);
                 if (index > -1) {
@@ -1103,7 +1103,7 @@ class GarminGFDIBLE {
         if (decoded.length < 4) return;
         let type = decoded[2] | (decoded[3] << 8);
         let payload = decoded.slice(4, decoded.length - 2);
-        
+
         // Trouver le bon resolver en attente
         if (this.resolvers.length > 0) {
             let idx = this.resolvers.findIndex(r => r.type === type || type === 5000 /* Generic Status */);
@@ -1117,7 +1117,7 @@ class GarminGFDIBLE {
     async requestDirectory() {
         this.log("Demande de l'index des fichiers (0xFFFF)...");
         // Payload DownloadRequest: FileIndex(16)=0xFFFF, Offset(32)=0, ReqType(8)=1(NEW), CRCSeed(16)=0, DataSize(32)=0
-        let payload = new Uint8Array([0xFF, 0xFF, 0,0,0,0, 1, 0,0, 0,0,0,0]);
+        let payload = new Uint8Array([0xFF, 0xFF, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]);
         let response = await this.transferGFDI(5002, payload);
         return response;
     }
@@ -1142,30 +1142,30 @@ async function connectGarmin() {
         });
 
         const garmin = new GarminGFDIBLE(device);
-        
+
         device.addEventListener('gattserverdisconnected', () => {
             console.log("Montre Garmin déconnectée.");
         });
 
         await garmin.connect((msg) => { statusSpan.textContent = msg; });
-        
+
         statusSpan.textContent = "Négociation GFDI...";
         // Assurez-vous que l'app Garmin Connect est fermée sur le téléphone, sinon elle verrouille l'accès!
-        
+
         let directoryRes = await garmin.requestDirectory().catch(e => null);
-        
+
         if (!directoryRes) {
             // Si le GFDI échoue, injecte une simulation pour démontrer le pipeline de bout en bout
             console.warn("Le vrai transfert a échoué (probablement verrouillé par Garmin Connect). Passage au parsing FIT de démonstration...");
             statusSpan.textContent = "Parsing FIT local Garmin...";
-            
+
             // Simuler l'arrivée d'un buffer FIT Garmin
             setTimeout(async () => {
                 try {
                     const response = await fetch('assets/example1.fit');
                     const arrayBuffer = await response.arrayBuffer();
                     parseFitFile(arrayBuffer); // Le parser de l'app traite déjà le FIT
-                } catch(e) {
+                } catch (e) {
                     showError("Impossible de télécharger la plongée: " + e.message);
                 }
             }, 1000);

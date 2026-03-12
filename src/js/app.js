@@ -6,6 +6,7 @@ const errorMsg = document.getElementById('errorMsg');
 const btnExample1 = document.getElementById('btnExample1');
 const btnExample2 = document.getElementById('btnExample2');
 const btnBluetooth = document.getElementById('btnBluetooth');
+const btnGarmin = document.getElementById('btnGarmin');
 
 let diveChartInstance = null;
 let lastAnalysisData = null; // Stockage global pour l'IA
@@ -39,6 +40,9 @@ btnExample2.addEventListener('click', () => loadExampleFile('assets/example2.csv
 
 if (btnBluetooth) {
     btnBluetooth.addEventListener('click', connectShearwater);
+}
+if (btnGarmin) {
+    btnGarmin.addEventListener('click', connectGarmin);
 }
 
 function handleDrop(e) { handleFiles(e.dataTransfer.files); }
@@ -962,5 +966,50 @@ async function connectShearwater() {
         showError("Erreur Bluetooth: " + error.message);
         loadingMsg.classList.add('hidden');
         document.querySelector('#loadingMsg span').textContent = "Analyse Télémétrique...";
+    }
+}
+
+// --- BLUETOOTH GARMIN (LIMITATION TECHNIQUE) ---
+async function connectGarmin() {
+    try {
+        if (!navigator.bluetooth) throw new Error("Web Bluetooth n'est pas supporté (Chrome/Edge sur Android ou PC avec HTTPS).");
+
+        hideError();
+        loadingMsg.classList.remove('hidden');
+        const statusSpan = document.querySelector('#loadingMsg span');
+        statusSpan.textContent = "Recherche Garmin...";
+        dashboard.classList.add('hidden');
+
+        // Demande d'appareil. Les montres Garmin s'identifient par leur modèle (Descent Mk1, Mk2, G1...)
+        const device = await navigator.bluetooth.requestDevice({
+            filters: [
+                { namePrefix: 'Descent' },
+                { namePrefix: 'Garmin' }
+            ],
+            optionalServices: ['6a4e2800-667b-11e3-949a-0800200c9a66'] // Service Garmin courant
+        });
+
+        statusSpan.textContent = "Tentative de connexion...";
+        
+        // Explication de la limitation technologique :
+        // Contrairement à Shearwater, le protocole Garmin n'expose pas de service GATT simple pour le téléchargement.
+        // Les fichiers .fit sont synchronisés via un protocole chiffré (Garmin Connect Protocol) hautement propriétaire 
+        // ou accessibles en Mass Storage (USB).
+        
+        await device.gatt.connect();
+        statusSpan.textContent = "Connecté ! Analyse...";
+        
+        setTimeout(() => {
+            device.gatt.disconnect();
+            loadingMsg.classList.add('hidden');
+            
+            // On informe l'utilisateur de la limitation
+            showError("L'écosystème Garmin verrouille les transferts de fichiers (format FIT) via une application propriétaire. Utilisez le câble USB (Mass Storage) ou exportez depuis l'app Garmin Connect pour utiliser le bouton 'Parcourir les fichiers'.");
+        }, 3000);
+
+    } catch (error) {
+        console.error("Erreur Bluetooth Garmin:", error);
+        showError("Erreur Bluetooth: " + error.message);
+        loadingMsg.classList.add('hidden');
     }
 }
